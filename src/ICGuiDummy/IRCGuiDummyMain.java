@@ -9,11 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import ServerGuiCommunicationInterface.GuiToConnectionInterface;
-import ServerGuiCommunicationInterface.TextSenderInterface;
+import ServerGuiCommunicationInterface.IrcGuiInterface;
+import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
 
-public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface {
+public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 
 	/**
 	 * 
@@ -21,7 +21,7 @@ public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface 
 	private static final long serialVersionUID = 1L;
 
 		
-		private TextSenderInterface ircServer = null;
+		private IrcServerInterface ircServer = null;
 		JTextField 	chatInputBox;
 		JTextArea 	chatMessageBox;
 		JButton		submit;
@@ -139,7 +139,7 @@ public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface 
 		}
 
 		@Override
-		public void addTextSender(TextSenderInterface sender) {
+		public void addTextSender(IrcServerInterface sender) {
 			this.ircServer = sender;
 			
 		}

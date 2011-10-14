@@ -1,20 +1,22 @@
 package IRCConnectionDummy;
 
-import ServerGuiCommunicationInterface.GuiToConnectionInterface;
-import ServerGuiCommunicationInterface.TextSenderInterface;
+import java.util.ArrayList;
+
+import ServerGuiCommunicationInterface.IrcGuiInterface;
+import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
 import ServerGuiCommunicationInterface.UserInfo;
 import ServerGuiCommunicationInterface.UserInfoInterface;
 import ServerGuiCommunicationInterface.UserList;
 
-public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInterface
+public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInterface
 {
 
 	String arr[] = {"Jan", "Holger", "Craig", "Julian", "Steven", "James"};
 	UserList userList = new UserList();
 	
 	
-	GuiToConnectionInterface interfaceConnection = null;
+	IrcGuiInterface interfaceConnection = null;
 	
 	public IRCConnectionDummyMain() {
 		
@@ -28,7 +30,7 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 	}
 	
 	@Override
-	public void setTextReceiver(GuiToConnectionInterface connection) {
+	public void setTextReceiver(IrcGuiInterface connection) {
 		
 		// TODO Auto-generated method stub
 		interfaceConnection = connection;
@@ -69,9 +71,8 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 
 	@Override
 	public UserInfo getCurrentUser() {
-		
 		UserInfo info = new UserInfo("Holger", null, "Holger Rocks");
-		return info;
+		return info;		
 	}
 
 	public void run() {
@@ -100,6 +101,13 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 		}
 		
 	}
+
+	@Override
+	public ArrayList<String> getChannelList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 	
