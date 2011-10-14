@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.text.NumberFormat;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -23,7 +21,7 @@ public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface 
 	private static final long serialVersionUID = 1L;
 
 		
-
+		private TextSenderInterface ircServer = null;
 		JTextField 	chatInputBox;
 		JTextArea 	chatMessageBox;
 		JButton		submit;
@@ -122,6 +120,7 @@ public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface 
 		public void submitClicked()
 		{
 			String text = chatInputBox.getText();
+			this.ircServer.sendText(text);
 			
 		}
 
@@ -141,7 +140,7 @@ public class IRCGuiDummyMain extends JFrame implements GuiToConnectionInterface 
 
 		@Override
 		public void addTextSender(TextSenderInterface sender) {
-			// TODO Auto-generated method stub
+			this.ircServer = sender;
 			
 		}
 

@@ -1,4 +1,4 @@
-import javax.swing.JFrame;
+package IRCMain;
 
 import ICGuiDummy.IRCGuiDummyMain;
 import IRCConnectionDummy.IRCConnectionDummyMain;

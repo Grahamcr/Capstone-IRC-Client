@@ -13,6 +13,7 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 	String arr[] = {"Jan", "Holger", "Craig", "Julian", "Steven", "James"};
 	UserList userList = new UserList();
 	
+	
 	GuiToConnectionInterface interfaceConnection = null;
 	
 	public IRCConnectionDummyMain() {
@@ -52,7 +53,10 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 	@Override
 	public void sendText(String text) {
 		
-		// Trasmit Text to other Users over the IRC-Connection
+		if(interfaceConnection != null)
+		{
+			interfaceConnection.writeString(this.getCurrentUser().getName(), text);
+		}
 		
 	}
 
@@ -88,7 +92,7 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 			}
 			
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(3500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
