@@ -1,9 +1,9 @@
 package ServerGuiCommunicationInterface;
 
-public interface TextSenderInterface extends Runnable{
+public interface IrcServerInterface extends Runnable{
 	
 	public void sendText(String text);
 	public void setTextStyle(TextStyle style);
-	public void setTextReceiver(GuiToConnectionInterface connection);
+	public void setTextReceiver(IrcGuiInterface connection);
 
 }

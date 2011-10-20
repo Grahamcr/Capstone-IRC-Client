@@ -1,9 +1,9 @@
-import javax.swing.JFrame;
+package IRCMain;
 
 import ICGuiDummy.IRCGuiDummyMain;
 import IRCConnectionDummy.IRCConnectionDummyMain;
-import ServerGuiCommunicationInterface.GuiToConnectionInterface;
-import ServerGuiCommunicationInterface.TextSenderInterface;
+import ServerGuiCommunicationInterface.IrcGuiInterface;
+import ServerGuiCommunicationInterface.IrcServerInterface;
 
 
 public class IrcClientMain {
@@ -19,7 +19,7 @@ public class IrcClientMain {
 		
 		
 		// Create the IRCConnection and start operation
-		TextSenderInterface ircConnection = new IRCConnectionDummyMain();
+		IrcServerInterface ircConnection = new IRCConnectionDummyMain();
 		Thread t = new Thread(ircConnection);
 		t.start();
 		
@@ -27,7 +27,7 @@ public class IrcClientMain {
 		
 		
 		// Create the GUI and start operation
-		GuiToConnectionInterface gui = new IRCGuiDummyMain();
+		IrcGuiInterface gui = new IRCGuiDummyMain();
 		// Add the Connection to the GUI. You can send Text with this Interface
 		gui.addTextSender(ircConnection);
 		// Start working

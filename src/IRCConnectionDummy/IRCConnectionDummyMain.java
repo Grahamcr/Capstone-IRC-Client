@@ -1,19 +1,22 @@
 package IRCConnectionDummy;
 
-import ServerGuiCommunicationInterface.GuiToConnectionInterface;
-import ServerGuiCommunicationInterface.TextSenderInterface;
+import java.util.ArrayList;
+
+import ServerGuiCommunicationInterface.IrcGuiInterface;
+import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
 import ServerGuiCommunicationInterface.UserInfo;
 import ServerGuiCommunicationInterface.UserInfoInterface;
 import ServerGuiCommunicationInterface.UserList;
 
-public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInterface
+public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInterface
 {
 
 	String arr[] = {"Jan", "Holger", "Craig", "Julian", "Steven", "James"};
 	UserList userList = new UserList();
 	
-	GuiToConnectionInterface interfaceConnection = null;
+	
+	IrcGuiInterface interfaceConnection = null;
 	
 	public IRCConnectionDummyMain() {
 		
@@ -27,7 +30,7 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 	}
 	
 	@Override
-	public void setTextReceiver(GuiToConnectionInterface connection) {
+	public void setTextReceiver(IrcGuiInterface connection) {
 		
 		// TODO Auto-generated method stub
 		interfaceConnection = connection;
@@ -52,7 +55,10 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 	@Override
 	public void sendText(String text) {
 		
-		// Trasmit Text to other Users over the IRC-Connection
+		if(interfaceConnection != null)
+		{
+			interfaceConnection.writeString(this.getCurrentUser().getName(), text);
+		}
 		
 	}
 
@@ -65,9 +71,8 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 
 	@Override
 	public UserInfo getCurrentUser() {
-		
 		UserInfo info = new UserInfo("Holger", null, "Holger Rocks");
-		return info;
+		return info;		
 	}
 
 	public void run() {
@@ -88,7 +93,7 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 			}
 			
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(3500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -96,6 +101,13 @@ public class IRCConnectionDummyMain implements TextSenderInterface, UserInfoInte
 		}
 		
 	}
+
+	@Override
+	public ArrayList<String> getChannelList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 
 	

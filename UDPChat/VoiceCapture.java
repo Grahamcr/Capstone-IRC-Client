@@ -3,12 +3,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-/****************************************************************
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/***************************************************************************************************
  * Write a description of class VoiceClient here.
  * 
  * @author (your name) 
  * @version (a version number or a date)
- *************************************************************/
+ ****************************************************************************************************/
 public class VoiceCapture extends JFrame {
   
     TargetDataLine targetDataLine;
@@ -29,26 +33,21 @@ public class VoiceCapture extends JFrame {
     JButton playBtn;
     
     
-    /**************************************************************
+    /*********************************************************************************************
      * Constructor - used only at this point to set up temp GUI screen
-     ****************************************************************/
+     *********************************************************************************************/
     public VoiceCapture() {
         setLayout(new FlowLayout());
         JButton captureBtn = new JButton("Capture");
         JButton stopBtn = new JButton("Stop");
-        JButton playBtn = new JButton("Playback");
+   
         add(captureBtn);
         add(stopBtn);
-        add(playBtn);
-        /**
-        captureBtn.addActionListener(this);
-        stopBtn.addActionListener(this);
-        playBtn.addActionListener(this);
-        **/
+   
         
       captureBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                captureAudio();
+                captureAudio(0);
             }
        }
        );
@@ -60,13 +59,7 @@ public class VoiceCapture extends JFrame {
       }
       );
       
-      playBtn.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                playRecorded();
-            }
-      }
-      );
-        
+           
         setVisible(true);
     }
     /**********************************************************************************************
@@ -81,24 +74,24 @@ public class VoiceCapture extends JFrame {
      * data.  Data is written to a ByteArrayOutputStream to be potenitally transmitted to 
      * other client. 
      **********************************************************************************************/
-    private void captureAudio(){
+    private void captureAudio(int mInt){
     try{
       //Get and display a list of available mixers.
       Mixer.Info[] mixerInfo =  AudioSystem.getMixerInfo();
       
       System.out.println("Available mixers:");
       for(int cnt = 0; cnt < mixerInfo.length; cnt++){
-      	System.out.println(mixerInfo[cnt].getName());
+        System.out.println(mixerInfo[cnt].getName());
       }
 
-      //set everything set up for capture
+      //set everything set up for capture provided by javax.sound
       audioFormat = getAudioFormat();
 
       DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 
-      //Select one of the available mixers.
-      Mixer mixer = AudioSystem.getMixer(mixerInfo[3]);
-      
+      //Select one of the available mixers provided by javax.sound
+      Mixer mixer = AudioSystem.getMixer(mixerInfo[mInt]);
+      System.out.println("Found a line that works! Good To Start Chat");
       //Get a TargetDataLine on the selected mixer.
       targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
       
@@ -109,8 +102,12 @@ public class VoiceCapture extends JFrame {
       //Create a thread to capture the microphone
       Thread captureThread = new CaptureThread();
       captureThread.start();
-    } catch (Exception e) {
-      System.out.println(e);
+      playRecorded();
+    } catch (IllegalArgumentException e) {
+        captureAudio(mInt+1);
+      System.out.println("That Line Didn't work....trying another");
+    } catch(Exception e) {
+        System.out.println("Found an error I don't know how to handle" + e);
     }
   }
     
@@ -121,16 +118,8 @@ public class VoiceCapture extends JFrame {
    private void playRecorded() {
         try{
       //Get everything set up for playback.
-      //Get the previously-saved data into a byte array object.
-      byte audioData[] = byteArrayOutputStream.toByteArray();
-      
-      //Get an input stream on the byte array containing the data
-      InputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+    
       AudioFormat audioFormat = getAudioFormat();
-      
-      audioInputStream = new AudioInputStream(byteArrayInputStream, 
-                            audioFormat, audioData.length/audioFormat.
-                            getFrameSize());
       DataLine.Info dataLineInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
       sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
       sourceDataLine.open(audioFormat);
@@ -167,25 +156,34 @@ public class VoiceCapture extends JFrame {
     return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
   }
   /*********************************************************************************************
-   * Class used to create a thread that will capture audio
+   * Class used to create a thread that will capture audio and send it out to other user
    **********************************************************************************************/
   class CaptureThread extends Thread{
-  //An arbitrary-size temporary holding buffer
-  byte tempBuffer[] = new byte[10000];
+  //An buffer of 512 bytes as that is the most we can send in a UDP packet
+  byte tempBuffer[] = new byte[512];
   public void run(){
-    byteArrayOutputStream = new ByteArrayOutputStream();
+    //byteArrayOutputStream = new ByteArrayOutputStream();
     stopCapture = false;
-    
-    try{
+      try{
+        DatagramSocket clientSocket = new DatagramSocket();
+  
       while(!stopCapture){
           
         //Read data from the internal buffer of the data line.
         int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
         
+        //Name or explicit IP Address - right now just send it back to me for testing purposes
+        InetAddress ipAddress = InetAddress.getByName("127.0.0.1");
+        
+        //For now just use a random port number
+        int port = 9876;
+        
         if(cnt > 0){
           
-          //Save data in output stream object.
-          byteArrayOutputStream.write(tempBuffer, 0, cnt);
+          //If have data - send it !
+          DatagramPacket sendPacket = new DatagramPacket(tempBuffer, tempBuffer.length, ipAddress, port);
+            
+          clientSocket.send(sendPacket);
         }
     }
       byteArrayOutputStream.close();
@@ -198,42 +196,63 @@ public class VoiceCapture extends JFrame {
  * Class which plays back audio captured by the captureThread
 **************************************************************************************************/
 class PlayThread extends Thread{
-  byte tempBuffer[] = new byte[10000];
 
   public void run(){
     try{
-      int cnt;
-      //Keep looping until the input read method
-      // returns -1 for empty stream.
-      while((cnt = audioInputStream.read(tempBuffer, 0,tempBuffer.length)) != -1){
-            if(cnt > 0){
-                //Write data to the buffer of the data line
-                sourceDataLine.write(tempBuffer,0,cnt);
-            }
-      }
-      //Block and wait for buffer of the data line to empty.
-      sourceDataLine.drain();
-      sourceDataLine.close();
+        
+        //Only listen for data coming in on a certain port number
+        DatagramSocket serverSocket = new DatagramSocket(9876);
+        
+        //byte array to receive data into
+        byte[] receiveData = new byte [1024];
+        
+        //Buffer to hold received data until we have received 10 packets
+        byte[] buffer = new byte [5120];
+        
+        //Used to keep track of where we are in the buffer
+        int placeHolder = 0;
+        
+        //Keep track of how many packets we have received
+        int count = 0;
+        
+        while(!stopCapture) {
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            
+            //read in data sent from the client
+            serverSocket.receive(receivePacket);
+            
+            //Get the data byte array from the packet
+            byte[] data = receivePacket.getData();
+            
+            //Add the most recently received data to that which we are already holding
+            int i = 0;
+            for(i = 0; i < receivePacket.getLength(); i++) {
+                 buffer[placeHolder+i] = data[i];
+             }
+             
+             //Update The Placebolder
+             placeHolder = placeHolder + i;
+            
+                    
+             //If we have enough packets send them 
+            if(count == 9 ) {
+                sourceDataLine.write(buffer,0, placeHolder);
+                count = 0;
+                placeHolder = 0;
+             }
+             //Otherwise increase the packet count
+             else {
+                 count++;
+             }
+            // sourceDataLine.drain();
+           // sourceDataLine.close();
+        }
       
     }catch (Exception e) {
       System.out.println(e);
     }
   }
 }
-    /********************************************************************************************
-     * Action Preformed Method - only temp 
-     ********************************************************************************************
-    public void actionPerformed(ActionEvent e){
-        if(e.getSource() == captureBtn) {
-            captureAudio();
-        }
-        else if(e.getSource() == stopBtn) {
-            //break out of capture while loop
-            stopCapture = true;
-        }
-        else if(e.getSource() == playBtn) {
-            playRecorded();
-        }
-    }
-    **/
+
 }
+

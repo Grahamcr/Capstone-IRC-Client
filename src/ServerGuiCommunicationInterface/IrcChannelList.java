@@ -1,0 +1,58 @@
+package ServerGuiCommunicationInterface;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class IrcChannelList {
+		
+	public ArrayList<IrcChannel> channelList = new ArrayList<IrcChannel>();
+	
+	
+	public IrcChannelList() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+	public void addChannel(String channel, String password)
+	{
+		IrcChannel chan = new IrcChannel(channel);
+		chan.loadChannelData(password);
+		
+		channelList.add(chan);
+	}
+	
+	public IrcChannel getIrcChannel(String channel)
+	{
+		for( IrcChannel c : channelList)
+		{
+			if(c.getName().equals(channel))
+			{
+				return c;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void removeChannel(String channel)
+	{
+		Iterator<IrcChannel> it = channelList.iterator();
+		
+		while( it.hasNext() )
+		{
+			IrcChannel chan = it.next();
+			
+			if(channel.equals(chan.getName()))
+			{
+				channelList.remove(chan);
+				return;
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+}
