@@ -91,7 +91,7 @@ public class VoiceCapture extends JFrame {
 
       //Select one of the available mixers provided by javax.sound
       Mixer mixer = AudioSystem.getMixer(mixerInfo[mInt]);
-      System.out.println("Found a line that works! Good To Go!");
+      System.out.println("Found a line that works! Good To Start Chat");
       //Get a TargetDataLine on the selected mixer.
       targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
       
