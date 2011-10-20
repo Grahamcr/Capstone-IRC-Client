@@ -47,7 +47,7 @@ public class VoiceCapture extends JFrame {
         
       captureBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                captureAudio();
+                captureAudio(0);
             }
        }
        );
@@ -74,7 +74,7 @@ public class VoiceCapture extends JFrame {
      * data.  Data is written to a ByteArrayOutputStream to be potenitally transmitted to 
      * other client. 
      **********************************************************************************************/
-    private void captureAudio(){
+    private void captureAudio(int mInt){
     try{
       //Get and display a list of available mixers.
       Mixer.Info[] mixerInfo =  AudioSystem.getMixerInfo();
@@ -90,8 +90,8 @@ public class VoiceCapture extends JFrame {
       DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 
       //Select one of the available mixers provided by javax.sound
-      Mixer mixer = AudioSystem.getMixer(mixerInfo[3]);
-      
+      Mixer mixer = AudioSystem.getMixer(mixerInfo[mInt]);
+      System.out.println("Found a line that works! Good To Go!");
       //Get a TargetDataLine on the selected mixer.
       targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
       
@@ -103,8 +103,11 @@ public class VoiceCapture extends JFrame {
       Thread captureThread = new CaptureThread();
       captureThread.start();
       playRecorded();
-    } catch (Exception e) {
-      System.out.println(e);
+    } catch (IllegalArgumentException e) {
+        captureAudio(mInt+1);
+      System.out.println("That Line Didn't work....trying another");
+    } catch(Exception e) {
+        System.out.println("Found an error I don't know how to handle" + e);
     }
   }
     
@@ -170,10 +173,10 @@ public class VoiceCapture extends JFrame {
         int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
         
         //Name or explicit IP Address - right now just send it back to me for testing purposes
-		InetAddress ipAddress = InetAddress.getByName("127.0.0.1");
-		
-		//For now just use a random port number
-		int port = 9876;
+        InetAddress ipAddress = InetAddress.getByName("127.0.0.1");
+        
+        //For now just use a random port number
+        int port = 9876;
         
         if(cnt > 0){
           
@@ -198,50 +201,50 @@ class PlayThread extends Thread{
     try{
         
         //Only listen for data coming in on a certain port number
-		DatagramSocket serverSocket = new DatagramSocket(9876);
-		
-		//byte array to receive data into
-		byte[] receiveData = new byte [1024];
+        DatagramSocket serverSocket = new DatagramSocket(9876);
         
-		//Buffer to hold received data until we have received 10 packets
-		byte[] buffer = new byte [5120];
-		
-		//Used to keep track of where we are in the buffer
-		int placeHolder = 0;
-		
-		//Keep track of how many packets we have received
-		int count = 0;
-		
-		while(!stopCapture) {
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			
-			//read in data sent from the client
-			serverSocket.receive(receivePacket);
-			
-			//Get the data byte array from the packet
-			byte[] data = receivePacket.getData();
-			
-			//Add the most recently received data to that which we are already holding
-			int i = 0;
-			for(i = 0; i < receivePacket.getLength(); i++) {
-			     buffer[placeHolder+i] = data[i];
-			 }
-			 
-			 //Update The Placebolder
-			 placeHolder = placeHolder + i;
-			
-					
-			 //If we have enough packets send them 
-			if(count == 9 ) {
-			    sourceDataLine.write(buffer,0, placeHolder);
-			    count = 0;
-			    placeHolder = 0;
-			 }
-			 //Otherwise increase the packet count
-			 else {
-			     count++;
-			 }
-			// sourceDataLine.drain();
+        //byte array to receive data into
+        byte[] receiveData = new byte [1024];
+        
+        //Buffer to hold received data until we have received 10 packets
+        byte[] buffer = new byte [5120];
+        
+        //Used to keep track of where we are in the buffer
+        int placeHolder = 0;
+        
+        //Keep track of how many packets we have received
+        int count = 0;
+        
+        while(!stopCapture) {
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            
+            //read in data sent from the client
+            serverSocket.receive(receivePacket);
+            
+            //Get the data byte array from the packet
+            byte[] data = receivePacket.getData();
+            
+            //Add the most recently received data to that which we are already holding
+            int i = 0;
+            for(i = 0; i < receivePacket.getLength(); i++) {
+                 buffer[placeHolder+i] = data[i];
+             }
+             
+             //Update The Placebolder
+             placeHolder = placeHolder + i;
+            
+                    
+             //If we have enough packets send them 
+            if(count == 9 ) {
+                sourceDataLine.write(buffer,0, placeHolder);
+                count = 0;
+                placeHolder = 0;
+             }
+             //Otherwise increase the packet count
+             else {
+                 count++;
+             }
+            // sourceDataLine.drain();
            // sourceDataLine.close();
         }
       
@@ -252,3 +255,4 @@ class PlayThread extends Thread{
 }
 
 }
+
