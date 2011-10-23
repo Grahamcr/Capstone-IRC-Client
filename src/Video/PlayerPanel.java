@@ -17,7 +17,7 @@ public class PlayerPanel extends JPanel implements ControllerListener
 	public PlayerPanel()
 	{
 		setLayout(new BorderLayout());
-		vsource = new VideoSource_Webcam();
+		vsource = new VideoSource_Webcam_JMF();
 		vsource.initializeSource();
 	}
 	

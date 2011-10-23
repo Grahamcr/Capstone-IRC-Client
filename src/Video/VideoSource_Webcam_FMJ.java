@@ -8,10 +8,15 @@ import javax.media.Format;
 import javax.media.Manager;
 import javax.media.MediaLocator;
 import javax.media.Player;
-import javax.media.format.RGBFormat;
+import javax.media.Processor;
+import javax.media.protocol.DataSource;
+import javax.media.rtp.RTPManager;
 
 import net.sf.fmj.ejmf.toolkit.install.PackageUtility;
+import net.sf.fmj.media.renderer.video.JPEGRenderer;
+import net.sf.fmj.media.renderer.video.Java2dRenderer;
 import net.sf.fmj.media.renderer.video.SimpleAWTRenderer;
+import net.sf.fmj.media.renderer.video.SimpleSwingRenderer;
 import net.sf.fmj.utility.PlugInUtility;
 
 import com.lti.civil.CaptureException;
@@ -19,7 +24,7 @@ import com.lti.civil.CaptureSystem;
 import com.lti.civil.CaptureSystemFactory;
 import com.lti.civil.DefaultCaptureSystemFactorySingleton;
 
-public class VideoSource_Webcam implements VideoSource
+public class VideoSource_Webcam_FMJ implements VideoSource
 {
 
 	@SuppressWarnings("rawtypes")
@@ -31,15 +36,17 @@ public class VideoSource_Webcam implements VideoSource
 	public void initializeSource()
 	{
 		Format usableFormat = null;
-		for (Format f : new SimpleAWTRenderer().getSupportedInputFormats())
+		for(Format f : new JPEGRenderer().getSupportedInputFormats())
 		{
-			final Format civilOutputFormat = new RGBFormat(null, -1, byte[].class, -1, 24, 1, 2, 3);
-			System.out.println(civilOutputFormat.matches(f) + " " + f);
-			if(civilOutputFormat.matches(f))
-				usableFormat = f;
+			System.out.println("JPEGRenderer: " +f);
+			usableFormat = f;
 		}
-		if(usableFormat == null)
-			usableFormat = new RGBFormat();
+		for(Format f : new Java2dRenderer().getSupportedInputFormats())
+			System.out.println("Java2dRenderer: " +f);
+		for (Format f : new SimpleAWTRenderer().getSupportedInputFormats())
+			System.out.println("SimpleAWTRenderer: " +f);
+		for (Format f : new SimpleSwingRenderer().getSupportedInputFormats())
+			System.out.println("SimpleSwingRenderer: " +f);
 		
 		PackageUtility.addContentPrefix("net.sf.fmj", false);
 		PackageUtility.addProtocolPrefix("net.sf.fmj", false);
@@ -68,7 +75,7 @@ public class VideoSource_Webcam implements VideoSource
 			//String name, MediaLocator locator, Format[] formats
 			CaptureDeviceInfo jmfInfo = new CaptureDeviceInfo(
 					//String name, MediaLocator locator, Format[] formats
-					civilInfo.getDescription(), new MediaLocator("civil:" + civilInfo.getDeviceID()), new Format[] {usableFormat});
+					civilInfo.getDescription(), new MediaLocator("civil:" + civilInfo.getDeviceID()), new SimpleSwingRenderer().getSupportedInputFormats());
 			CaptureDeviceManager.addDevice(jmfInfo);
 		}
 
@@ -99,7 +106,11 @@ public class VideoSource_Webcam implements VideoSource
 
 			try
 			{
-				player = Manager.createPlayer(infoCaptureDevice.getLocator());
+//				player = Manager.createPlayer(infoCaptureDevice.getLocator());
+				DataSource data = Manager.createDataSource(infoCaptureDevice.getLocator());
+//				Processor pro = Manager.createProcessor(data);
+				player = Manager.createPlayer(data);
+				player.realize();
 			} catch (Exception e)
 			{
 				System.err.println(e.getMessage());
@@ -109,7 +120,7 @@ public class VideoSource_Webcam implements VideoSource
 	        player.start();
 			
 		}
-		return false;
+		return true;
 	}
 
 	@Override

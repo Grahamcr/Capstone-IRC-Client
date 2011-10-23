@@ -1,11 +1,11 @@
 package de.fhh.CapstoneIRC.Video;
 
-import javax.media.Player;
+import javax.media.protocol.DataSource;
 
 public interface VideoSource
 {
 	void initializeSource();
 	boolean openSource();
 	void closeSource();
-	Player getVideoPlayer();
+	DataSource getDataSource();
 }
