@@ -41,7 +41,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		IrcChannel currentChannel;
 		TextField 	ipAdressBox;
 		TextField 	portBox;
-		TextField 	channelBox;
+		//TextField 	channelBox;
 		TextField	userNameBox;
 		
 		JButton		openConnectionButton;
@@ -52,7 +52,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 
 		JLabel ipLabel;
 		JLabel portLabel;
-		JLabel chanLabel;
+		//JLabel chanLabel;
 		JLabel userNameLabel;
 		
 		
@@ -85,11 +85,9 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			System.out.println("test");
-			this.setBounds(10, 10, 540, 580);
-			this.setVisible(true);
-			System.out.println("test");
 			
+			this.setBounds(10, 10, 540, 580);
+			this.setVisible(true);	
 			
 		}
 		
@@ -99,7 +97,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			// Instanzieren:
 			ipLabel = new JLabel();
 			portLabel = new JLabel();
-			chanLabel = new JLabel();
+			//chanLabel = new JLabel();
 			userNameLabel = new JLabel();
 			
 			userNameBox = new TextField();
@@ -107,7 +105,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			chatMessageBox = new JTextArea();
 			ipAdressBox = new TextField();
 			portBox = new TextField();
-			channelBox = new TextField();
+			//channelBox = new TextField();
 			openConnectionButton = new JButton();
 			userList = new JList(listModel);
 			
@@ -163,13 +161,13 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			portBox.setBounds(285, 20, 70, 20);
 			
 			
-			chanLabel.setBounds(5,50, 80, 20);
-			chanLabel.setText("Channel:");
-			channelBox.setBounds(95, 50, 80, 20);
+			//chanLabel.setBounds(5,50, 80, 20);
+			//chanLabel.setText("Channel:");
+			//channelBox.setBounds(95, 50, 80, 20);
 			
-			userNameLabel.setBounds(235,50, 40, 20);
+			userNameLabel.setBounds(5,50, 80, 20);
 			userNameLabel.setText("Name:");
-			userNameBox.setBounds(285, 50, 70, 20);
+			userNameBox.setBounds(95, 50, 80, 20);
 			
 			openConnectionButton.setBounds(365, 50, 120, 20);
 			openConnectionButton.setText("open Connection");
@@ -177,10 +175,10 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			
 			
 
-			ipAdressBox.setText("127.0.0.1");
+			ipAdressBox.setText("irc.quakenet.org");
 			portBox.setText("6667");
-			channelBox.setText("#test");
-			userNameBox.setText("Holger29");
+			//channelBox.setText("#test");
+			userNameBox.setText("Holger30");
 
 			// chat elements
 			chatInputBox.setBounds(5, 505,300, 25);
@@ -203,8 +201,8 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			this.getContentPane().add(portLabel);
 			this.getContentPane().add(portBox);
 			
-			this.getContentPane().add(chanLabel);
-			this.getContentPane().add(channelBox);
+			//this.getContentPane().add(chanLabel);
+			//this.getContentPane().add(channelBox);
 			
 			this.getContentPane().add(openConnectionButton);
 			this.getContentPane().add(userNameBox);
@@ -226,13 +224,24 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			ircConnection.setTextReceiver(this);
 			
 			ircConnection.openConnection(ipAdressBox.getText(), Integer.parseInt(portBox.getText()), userNameBox.getText(), userNameBox.getText());
-			ircConnection.sendText("join "+ channelBox.getText());
+			
+			
+			//ircConnection.sendText("join "+ channelBox.getText());
 		}
 
 		public void submitClicked()
 		{
 			String text = chatInputBox.getText();
-			this.ircServer.sentTextToChannel("test",text);
+			if(text.indexOf('/') == 0)
+			{
+				System.out.println(text);
+				ircServer.sendText(text.substring(1));
+			}
+			else
+			{
+				this.ircServer.sentTextToChannel(currentChannel.getName(),text);
+			}
+			
 			chatInputBox.setText("");
 		}
 
@@ -277,7 +286,6 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		@Override
 		public void updateChannel() {
 						
-			System.out.println("test");
 			listModel.removeAllElements();
 			
 			

@@ -18,6 +18,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	IrcGuiInterface guiConnection = null;
 	UserInfo currentUser = null;
 	IrcChannelList chanList = new IrcChannelList();
+	String serverName = "";
 	
 	
 	@Override
@@ -43,22 +44,34 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	       // Directly send the result for the PING-request
 			String firstToken = st.nextToken();
 			
-	       if(firstToken.equals("PING"))
+			
+			if( line.contains("001"))
+			{
+				serverName = firstToken.substring(1);
+				guiConnection.writeString(serverName, "connection established");
+			}
+			else if(firstToken.equals("PING"))
 	       {
 	    	   tcp.sendMessage("PONG " + st.nextToken());
 	       }
 	       else if(line.contains("PRIVMSG"))
 	       {
+	    	   
+	    	   
 	    	   firstToken = firstToken.substring(1);
-	    	   firstToken = firstToken.substring(0, firstToken.indexOf('!'));
-	    	   
-	    	   String user = firstToken;
-	    	   st.nextToken();
-	    	   String chan = st.nextToken();
-	    	   String text = st.nextToken().substring(1);
-	    	   
-	    	   
-	    	   guiConnection.writeString(user, text);
+	    	   int index =  firstToken.indexOf('!');
+	    	   if(index > 0)
+	    	   {
+		    	   firstToken = firstToken.substring(0, index);
+		    	   
+		    	   String user = firstToken;
+		    	   st.nextToken();
+		    	   String chan = st.nextToken();
+		    	   String text = st.nextToken().substring(1);
+		    	   
+		    	   
+		    	   guiConnection.writeString(user, text);
+	    	   }
 	       }
 	       else if( line.contains("JOIN") )
 	       {
@@ -126,6 +139,15 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	    	   
 	    	   guiConnection.openChannel(chan, false);
 	       }  
+	       else if( line.contains("366"))
+	       {
+	    	   st.nextToken();
+	    	   st.nextToken();
+	    	   
+	    	   String channel = st.nextToken();
+	    	   IrcChannel chan = chanList.getIrcChannel(channel);
+	    	   guiConnection.openChannel(chan, false);
+	       }
 		}
 	}
 
@@ -179,6 +201,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		// Save current userinfo
 		currentUser = new UserInfo(nickname, null, realname);
 		tcp = new TCPConnection(ip, port);
+		serverName = ip;
 		
 		// open the connection to the assigned server
 		//Thread t = new Thread(tcp);
@@ -199,7 +222,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	@Override
 	public void sentTextToChannel(String channel, String message) {
 		
-		sendText("PRIVMSG " + "#" + channel + " :" + message);
+		sendText("PRIVMSG " + channel + " :" + message);
 		guiConnection.writeString(getCurrentUser().getName(), message);
 	}
 
