@@ -65,9 +65,13 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   firstToken = firstToken.substring(0, index);
 		    	   
 		    	   String user = firstToken;
+		    	
+		    	   
 		    	   st.nextToken();
 		    	   String chan = st.nextToken();
-		    	   String text = st.nextToken().substring(1);
+		    	   String text = line.substring(line.indexOf(chan));
+		    	   text = text.substring(text.indexOf(':') + 1);
+		    	   //String text = st.nextToken().substring(1);
 		    	   
 		    	   
 		    	   guiConnection.writeString(user, text);
