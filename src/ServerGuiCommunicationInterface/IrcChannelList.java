@@ -12,6 +12,20 @@ public class IrcChannelList {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public void removeUserFromChannels(String username)
+	{		
+		Iterator<IrcChannel> it = channelList.iterator();
+		
+		while( it.hasNext() )
+		{
+			IrcChannel chan = it.next();
+			UserInfo u = chan.getUserByName(username);
+			if( u != null)
+			{
+				chan.removeUser(u);
+			}
+		}
+	}
 	
 	public void addChannel(String channel, String password)
 	{
@@ -23,16 +37,21 @@ public class IrcChannelList {
 	
 	public IrcChannel getIrcChannel(String channel)
 	{
-		for( IrcChannel c : channelList)
+		
+		Iterator<IrcChannel> it = channelList.iterator();
+		
+		while( it.hasNext() )
 		{
-			if(c.getName().equals(channel))
+			IrcChannel chan = it.next();
+			if(chan.getName().equals(channel))
 			{
-				return c;
+				return chan;
 			}
 		}
 		
 		return null;
 	}
+	
 	
 	public void removeChannel(String channel)
 	{

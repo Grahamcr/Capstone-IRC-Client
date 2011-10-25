@@ -8,8 +8,8 @@ public class IrcChannel {
 	String password;
 	
 	ArrayList<Character> modeArray = new ArrayList<Character>();
-	ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
-	
+	//ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
+	UserList userList = new UserList();
 	
 	/**
 	 * This funktion should be overwrited and load the userlist of the given channel
@@ -29,31 +29,23 @@ public class IrcChannel {
 		this.name = name;		
 	}
 	
-	public ArrayList<UserInfo> getUserList()
+	public UserList getUserList()
 	{
 		return userList;
 	}
 	
 	public void addUser(UserInfo user)
 	{
-		userList.add(user);
+		userList.addUser(user);
 	}
 	
 	public void removeUser(UserInfo user)
 	{
-		userList.remove(user);
+		userList.removeUser(user);
 	}
 	
 	public UserInfo getUserByName(String name)
 	{
-		for( UserInfo u : userList )
-		{
-			if(u.getName().equals(name))
-			{
-				return u;
-			}
-		}
-		
-		return null;
+		return userList.getUserByName(name);
 	}
 }

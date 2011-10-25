@@ -1,6 +1,7 @@
 package IRCMain;
 
 import ICGuiDummy.IRCGuiDummyMain;
+import IRCConnection.IRCConnectionMain;
 import IRCConnectionDummy.IRCConnectionDummyMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
@@ -19,9 +20,9 @@ public class IrcClientMain {
 		
 		
 		// Create the IRCConnection and start operation
-		IrcServerInterface ircConnection = new IRCConnectionDummyMain();
-		Thread t = new Thread(ircConnection);
-		t.start();
+		//IrcServerInterface ircConnection = new IRCConnectionMain();
+		//Thread t = new Thread(ircConnection);
+		//t.start();
 		
 		
 		
@@ -29,18 +30,18 @@ public class IrcClientMain {
 		// Create the GUI and start operation
 		IrcGuiInterface gui = new IRCGuiDummyMain();
 		// Add the Connection to the GUI. You can send Text with this Interface
-		gui.addTextSender(ircConnection);
+		//gui.addIrcServer(ircConnection);
 		// Start working
 		Thread t2 = new Thread(gui);
 		t2.start();
 		
 		
 		// Give the GUI to the IRCConnection.
-		ircConnection.setTextReceiver(gui);
+		//ircConnection.setTextReceiver(gui);
 		
 		
 		
-		while(t.isAlive() || t2.isAlive())
+		while(t2.isAlive())
 		{
 			try {
 				Thread.sleep(1000);

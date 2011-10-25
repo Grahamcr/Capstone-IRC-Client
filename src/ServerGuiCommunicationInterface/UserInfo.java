@@ -8,10 +8,25 @@ public class UserInfo {
 	private String name;
 	private InetAddress adress;
 	private String realName;
-
+	private boolean isAdmin;
+	private boolean isOperator;
 	
 	public UserInfo(String name, InetAddress adress, String realName) {
 		super();
+		isAdmin = false;
+		isOperator = false;
+		
+		if(name.charAt(0) == '+')
+		{
+			isOperator = true;
+			name = name.substring(1);
+		}
+		else if(name.charAt(0) == '@')
+		{
+			isAdmin = true;
+			name = name.substring(1);
+		}
+		
 		this.name = name;
 		this.adress = adress;
 		this.realName = realName;

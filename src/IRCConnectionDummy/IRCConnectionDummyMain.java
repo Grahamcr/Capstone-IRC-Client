@@ -2,6 +2,7 @@ package IRCConnectionDummy;
 
 import java.util.ArrayList;
 
+import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
@@ -103,9 +104,27 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 	}
 
 	@Override
-	public ArrayList<String> getChannelList() {
+	public IrcChannelList getChannelList() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void openConnection(String ip, int port, String nickname, String realname ){
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sentTextToChannel(String channel, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendPrivateMessage(String username, String message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
