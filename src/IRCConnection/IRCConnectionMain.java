@@ -1,6 +1,5 @@
 package IRCConnection;
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import ServerGuiCommunicationInterface.IrcChannel;
@@ -19,6 +18,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	UserInfo currentUser = null;
 	IrcChannelList chanList = new IrcChannelList();
 	String serverName = "";
+	UserList globalUserList = new UserList();
+	
 	
 	
 	@Override
@@ -43,48 +44,34 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 				
 	       // Directly send the result for the PING-request
 			String firstToken = st.nextToken();
+			String commandToken = st.nextToken();
 			
 			
-			if( line.contains("001"))
+	       if(commandToken.equals("PRIVMSG"))
+	       {  
+	    	   String user = getNameFromToken(firstToken);	
+	    	   
+	    	   if(user != null)
+	    	   {
+		    	   String chan = st.nextToken();
+		    	   String text = line.substring(line.indexOf(chan));
+		    	   text = text.substring(text.indexOf(':') + 1);		    	   
+		    	 
+		    	   guiConnection.writeString(user, text);
+	    	   }
+	       }
+	       else if( commandToken.equals("001"))
 			{
 				serverName = firstToken.substring(1);
 				guiConnection.writeString(serverName, "connection established");
 			}
-			else if(firstToken.equals("PING"))
+		   else if(firstToken.equals("PING"))
 	       {
-	    	   tcp.sendMessage("PONG " + st.nextToken());
+	    	   tcp.sendMessage("PONG " + commandToken);
 	       }
-	       else if(line.contains("PRIVMSG"))
+	       else if( commandToken.equals("JOIN") )
 	       {
-	    	   
-	    	   
-	    	   firstToken = firstToken.substring(1);
-	    	   int index =  firstToken.indexOf('!');
-	    	   if(index > 0)
-	    	   {
-		    	   firstToken = firstToken.substring(0, index);
-		    	   
-		    	   String user = firstToken;
-		    	
-		    	   
-		    	   st.nextToken();
-		    	   String chan = st.nextToken();
-		    	   String text = line.substring(line.indexOf(chan));
-		    	   text = text.substring(text.indexOf(':') + 1);
-		    	   //String text = st.nextToken().substring(1);
-		    	   
-		    	   
-		    	   guiConnection.writeString(user, text);
-	    	   }
-	       }
-	       else if( line.contains("JOIN") )
-	       {
-	    	   firstToken = firstToken.substring(1);
-	    	   firstToken = firstToken.substring(0, firstToken.indexOf('!'));
-	    	   
-	    	   String user = firstToken;
-	    	   st.nextToken();
-	    	   
+	    	   String user = getNameFromToken(firstToken);	   
 	    	   
 	    	   if(user != this.getCurrentUser().getName())
 	    	   {
@@ -92,28 +79,21 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   IrcChannel c = chanList.getIrcChannel(channel);
 		    	   if( c != null)
 		    	   {
-		    		    c.addUser(new UserInfo(user, null, null));
+		    		    c.addUser(  globalUserList.addUser(new UserInfo(user)), user );
 		    		    guiConnection.updateChannel();
 		    	   }
 	    	   }
 	    	   
 	    	   
 	       }
-	       else if( line.contains("QUIT"))
+	       else if( commandToken.equals("QUIT"))
 	       {
-	    	   firstToken = firstToken.substring(1);
-	    	   firstToken = firstToken.substring(0, firstToken.indexOf('!'));
-	    	   
-	    	   String user = firstToken;
+	    	   String user = getNameFromToken(firstToken);	
 	    	   chanList.removeUserFromChannels(user);
-	    	   guiConnection.updateChannel();
-	    	   
-	    	   
-	    	   
+	    	   guiConnection.updateChannel(); 
 	       }
-	       else if( line.contains("353")) // Start userlist of a given Channel
+	       else if( commandToken.equals("353")) // Start userlist of a given Channel
 	       {
-	    	   st.nextToken();
 	    	   st.nextToken();
 	    	   st.nextToken();
 	    	   
@@ -132,20 +112,20 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	    	   
 	    	   // The first username starts with a ':'
 	    	   // clear this char
-	    	  
-	    	   chan.addUser(new UserInfo(st.nextToken().substring(1), null, null));
+	    	   String name = st.nextToken().substring(1);
+	    	   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
 	    	   
 	    	   // fill the list
 	    	   while(st.hasMoreTokens())
 	    	   {
-	    		   chan.addUser(new UserInfo(st.nextToken(), null, null));
+	    		   name = st.nextToken();
+	    		   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
 	    	   }
 	    	   
 	    	   guiConnection.openChannel(chan, false);
 	       }  
-	       else if( line.contains("366"))
+	       else if( commandToken.equals("366"))
 	       {
-	    	   st.nextToken();
 	    	   st.nextToken();
 	    	   
 	    	   String channel = st.nextToken();
@@ -198,27 +178,36 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		
 	}
 	
+	public String getNameFromToken(String token)
+	{	
+		token = token.substring(1);
+ 	   int index =  token.indexOf('!');
+ 	   if(index > 0)
+ 	   {
+ 		  token = token.substring(0, index); 	   
+ 		  return token;
+ 	   }
+ 	   return null;
+	}
+	
 
 	@Override
-	public void openConnection(String ip, int port, String nickname, String realname ) {
+	public void openConnection(String ip, int port, String nickname, String realName ) {
 		
 		// Save current userinfo
-		currentUser = new UserInfo(nickname, null, realname);
+		currentUser = new UserInfo(nickname);
+		currentUser.setRealName(realName);
+		
 		tcp = new TCPConnection(ip, port);
 		serverName = ip;
-		
-		// open the connection to the assigned server
-		//Thread t = new Thread(tcp);
-		//t.start();
-		
-		if( realname == null)
+
+		if( realName == null)
 		{
-			realname = nickname;
+			realName = nickname;
 		}
 		
-		
 		// send the userinfo to the server
-		String message = "USER CapIRC "+ tcp.getHostname() + " " + ip + " " + realname;
+		String message = "USER CapIRC "+ tcp.getHostname() + " " + ip + " " + realName;
 		tcp.sendMessage(message);
 		tcp.sendMessage("NICK " + nickname);
 	}

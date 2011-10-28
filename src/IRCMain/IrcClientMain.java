@@ -1,10 +1,7 @@
 package IRCMain;
 
 import ICGuiDummy.IRCGuiDummyMain;
-import IRCConnection.IRCConnectionMain;
-import IRCConnectionDummy.IRCConnectionDummyMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
-import ServerGuiCommunicationInterface.IrcServerInterface;
 
 
 public class IrcClientMain {

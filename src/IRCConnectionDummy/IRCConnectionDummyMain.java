@@ -1,7 +1,5 @@
 package IRCConnectionDummy;
 
-import java.util.ArrayList;
-
 import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
@@ -23,7 +21,7 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 		
 		for( String s : arr)
 		{
-			UserInfo info = new UserInfo(s, null, s);
+			UserInfo info = new UserInfo(s);
 			userList.addUser(info);
 		}
 		
@@ -72,7 +70,8 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 
 	@Override
 	public UserInfo getCurrentUser() {
-		UserInfo info = new UserInfo("Holger", null, "Holger Rocks");
+		UserInfo info = new UserInfo("Holger");
+		info.setRealName("Holger Rocks");
 		return info;		
 	}
 

@@ -9,7 +9,7 @@ public class IrcChannel {
 	
 	ArrayList<Character> modeArray = new ArrayList<Character>();
 	//ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
-	UserList userList = new UserList();
+	ChannelUserList userList = new ChannelUserList();
 	
 	/**
 	 * This funktion should be overwrited and load the userlist of the given channel
@@ -29,22 +29,22 @@ public class IrcChannel {
 		this.name = name;		
 	}
 	
-	public UserList getUserList()
+	public ChannelUserList getUserList()
 	{
 		return userList;
 	}
 	
-	public void addUser(UserInfo user)
+	public void addUser(UserInfo user, String name)
 	{
-		userList.addUser(user);
+		userList.addUser(user, name);
 	}
 	
-	public void removeUser(UserInfo user)
+	public void removeUser(ChannelUser user)
 	{
 		userList.removeUser(user);
 	}
 	
-	public UserInfo getUserByName(String name)
+	public ChannelUser getUserByName(String name)
 	{
 		return userList.getUserByName(name);
 	}

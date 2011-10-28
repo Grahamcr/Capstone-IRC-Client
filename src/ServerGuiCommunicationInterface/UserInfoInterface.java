@@ -1,7 +1,5 @@
 package ServerGuiCommunicationInterface;
 
-import java.util.ArrayList;
-
 public interface UserInfoInterface {
 	
 	public UserList getUserList();

@@ -67,17 +67,8 @@ public class TCPConnection implements Runnable {
 				{
 					bufferedReader = new BufferedReader( new InputStreamReader(socket.getInputStream()));
 				}
-		       
-		       
-		       line = bufferedReader.readLine();
-		       StringTokenizer st = new StringTokenizer(line, " ");
-				
-		       // Directly send the result for the PING-request
-		       if( st.nextToken().equals("PING"))
-		       {
-		    	   this.sendMessage("PONG " + st.nextToken());
-		       }	       
-		       
+		      
+		       line = bufferedReader.readLine();	       
 		       System.out.println(line);
 		       System.out.flush();
 			}			

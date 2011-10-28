@@ -19,7 +19,7 @@ public class IrcChannelList {
 		while( it.hasNext() )
 		{
 			IrcChannel chan = it.next();
-			UserInfo u = chan.getUserByName(username);
+			ChannelUser u = chan.getUserByName(username);
 			if( u != null)
 			{
 				chan.removeUser(u);

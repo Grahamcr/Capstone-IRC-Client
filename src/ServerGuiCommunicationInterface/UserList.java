@@ -14,9 +14,14 @@ public class UserList {
 		userList.clear();
 	}
 	
-	public void addUser(UserInfo user)
+	public UserInfo addUser(UserInfo user)
 	{
-		userList.add(user);
+		if(getUserByName(user.getName()) == null)
+		{			
+			userList.add(user);
+		}
+		
+		return getUserByName(user.getName());
 	}
 	
 	public void removeUser(UserInfo user)
@@ -44,5 +49,4 @@ public class UserList {
 		
 		return null;
 	}
-	
 }

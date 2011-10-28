@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -17,11 +16,11 @@ import javax.swing.JList;
 import javax.swing.JTextArea;
 
 import IRCConnection.IRCConnectionMain;
+import ServerGuiCommunicationInterface.ChannelUser;
 import ServerGuiCommunicationInterface.IrcChannel;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
-import ServerGuiCommunicationInterface.UserInfo;
 import ServerGuiCommunicationInterface.UserInfoInterface;
 
 public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
@@ -30,9 +29,6 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-
-		
 	
 		private UserInfoInterface userInfo = null;
 		private DefaultListModel listModel = new DefaultListModel();
@@ -175,7 +171,8 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			
 			
 
-			ipAdressBox.setText("irc.quakenet.org");
+			//ipAdressBox.setText("irc.quakenet.org");
+			ipAdressBox.setText("127.0.0.1");
 			portBox.setText("6667");
 			//channelBox.setText("#test");
 			userNameBox.setText("Holger30");
@@ -271,9 +268,9 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			currentChannel = channel;
 			listModel.removeAllElements();
 			
-			for( UserInfo u: channel.getUserList().getUserListArray())
+			for( ChannelUser u: channel.getUserList().getUserListArray())
 			{
-				listModel.addElement(u.getName());
+				listModel.addElement(u.getUser().getName());
 			}	
 		}
 
@@ -289,9 +286,9 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			listModel.removeAllElements();
 			
 			
-			for( UserInfo u: currentChannel.getUserList().getUserListArray())
+			for( ChannelUser u: currentChannel.getUserList().getUserListArray())
 			{
-				listModel.addElement(u.getName());
+				listModel.addElement(u.getUser().getName());
 			}	
 		}
 
