@@ -1,5 +1,8 @@
 package ServerGuiCommunicationInterface;
 
+import IRCConnection.UserInfo;
+import IRCConnection.UserList;
+
 public interface UserInfoInterface {
 	
 	public UserList getUserList();

@@ -1,5 +1,7 @@
 package ServerGuiCommunicationInterface;
 
+import IRCConnection.UserInfo;
+
 public class ChannelUser {
 	UserInfo user;
 	boolean isAdmin;
