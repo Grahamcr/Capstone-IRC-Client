@@ -11,43 +11,55 @@ import javax.media.protocol.SourceCloneable;
 
 public class VideoConnection implements ControllerListener
 {
-	public  VideoChatWindow parent;
-	private VideoSource vsource;
-	private VideoPlayer vplayer;
-	private RTPConnection rtpConn;
-	private String		remoteIP;
-	private int		rtpPort;
-	private DataSource data;
-	private DataSource dsc;
+	public		VideoChatWindow		m_parent;
+	private		VideoSource			m_vsource;
+	private		VideoPlayer			m_vplayer;
+	private		RTPConnection		m_rtpConn;
+	private		String				m_remoteIP;
+	private		int					m_rtpPort;
+	private		DataSource			m_dataSource;
+	private		DataSource			m_dataSourceClone;
 	
 	public VideoConnection(VideoChatWindow parent, String IP, int Port)
 	{
-		this.parent = parent;
-		remoteIP = IP;
-		rtpPort = Port;
-		vsource = new VideoSource_Webcam_JMF();
-		vsource.initializeSource();
+		m_parent = parent;
+		m_remoteIP = IP;
+		m_rtpPort = Port;
+		m_vsource = new VideoSource_Webcam_JMF();
+		m_vsource.initializeSource();
 	}
 	
 	public void start()
 	{
 		System.out.println("VideoConnection->start()");
-		vsource.openSource();
-		data = vsource.getDataSource();
-		data = Manager.createCloneableDataSource(data);
-		dsc = ((SourceCloneable)data).createClone();
-		vplayer = new VideoPlayer(parent, dsc, false);
-		vplayer.start();
-		rtpConn = new RTPConnection(this, data, remoteIP, rtpPort);
-		rtpConn.start();
+		m_vsource.openSource();
+		m_dataSource = m_vsource.getDataSource();
+		m_dataSource = Manager.createCloneableDataSource(m_dataSource);
+		m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
+		m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
+		m_vplayer.start();
+		m_rtpConn = new RTPConnection(this, m_dataSource, m_remoteIP, m_rtpPort);
+		m_rtpConn.start();
 	}
 	
 	public void stop()
 	{
 		System.out.println("VideoConnection->stop()");
-		rtpConn.stop();
-		vplayer.stop();
-		vsource.closeSource();
+		if(m_rtpConn != null)
+		{
+			m_rtpConn.stop();
+			m_rtpConn = null;
+		}
+		if(m_vplayer != null)
+		{
+			m_vplayer.stop();
+			m_vplayer = null;
+		}
+		if(m_vsource != null)
+		{
+			m_vsource.closeSource();
+			m_vsource = null;
+		}
 	}
 	
 	@Override
@@ -58,20 +70,20 @@ public class VideoConnection implements ControllerListener
 			System.err.println(c.getSource().toString());
 			System.err.println(c.getSourceController().toString());
 			Component visualComponent;
-			if(c.getSourceController() == vplayer)
-				if(vplayer.getVideoPlayer() != null)
-			if((visualComponent = vplayer.getVideoPlayer().getVisualComponent()) != null)
+			if(c.getSourceController() == m_vplayer)
+				if(m_vplayer.getVideoPlayer() != null)
+			if((visualComponent = m_vplayer.getVideoPlayer().getVisualComponent()) != null)
 			{
-				parent.getPlayer2().add(visualComponent);
+				m_parent.getPlayer2().add(visualComponent);
 			}
 			else
 				System.err.println("vplayer.getVisualComponent() == null");
 
-			if(c.getSourceController() == rtpConn)
-				if(rtpConn.getVideoProcessor() != null)
-			if((visualComponent = rtpConn.getVideoProcessor().getVisualComponent()) != null)
+			if(c.getSourceController() == m_rtpConn)
+				if(m_rtpConn.getVideoProcessor() != null)
+			if((visualComponent = m_rtpConn.getVideoProcessor().getVisualComponent()) != null)
 			{
-				parent.getPlayer1().add(visualComponent);
+				m_parent.getPlayer1().add(visualComponent);
 			}
 		}
 	}

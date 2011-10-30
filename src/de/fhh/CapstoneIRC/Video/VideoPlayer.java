@@ -11,55 +11,62 @@ import javax.media.protocol.DataSource;
 
 public class VideoPlayer implements ControllerListener
 {
-	private DataSource data;
-	private Player player;
-	static private VideoChatWindow vcw;
-	private boolean rtp;
+	private			DataSource		m_data;
+	private 		Player			m_player;
+	private 		boolean			m_rtp;
+	static private	VideoChatWindow m_vcw;
+	
 	public VideoPlayer(DataSource ds, boolean rtp)
 	{
-		this(vcw,ds,rtp);
+		this(m_vcw,ds,rtp);
 	}
 	public VideoPlayer(VideoChatWindow vcw, DataSource ds, boolean rtp)
 	{
-		VideoPlayer.vcw = vcw;
-		data = ds;
-		this.rtp = rtp;
+		m_vcw = vcw;
+		m_data = ds;
+		m_rtp = rtp;
 		try
 		{
-			player = Manager.createPlayer(data);
-			player.addControllerListener(this);
-			player.realize();
+			m_player = Manager.createPlayer(m_data);
+			m_player.addControllerListener(this);
+			m_player.realize();
 		} catch (Exception e)
 		{
-			System.err.println(e.getMessage());
+			System.err.println(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	public void start()
 	{
-		player.start();
-		System.out.println("Player started");
+		if(m_player != null)
+		{
+			m_player.start();
+			System.out.println("Player started");
+		}
+		else
+			System.err.println("Player could not be started, because Player is null!");
 	}
 	
 	public void stop()
 	{
-		if(player != null)
+		if(m_player != null)
 		{
-			if(rtp)
-				vcw.getPlayer1().removeAll();
+			if(m_rtp)
+				m_vcw.getPlayer1().removeAll();
 			else
-				vcw.getPlayer2().removeAll();
-			player.close();
+				m_vcw.getPlayer2().removeAll();
+			m_player.stop();
+			m_player.deallocate();
+			m_player.close();
+			m_player = null;
 			System.out.println("Player stopped");
-			player.deallocate();
-			player = null;
 		}	
 	}
 	
 	public Player getVideoPlayer()
 	{
-		return player;
+		return m_player;
 	}
 	
 	@Override
@@ -71,13 +78,13 @@ public class VideoPlayer implements ControllerListener
 			if(getVideoPlayer() != null)
 			if((visualComponent = getVideoPlayer().getVisualComponent()) != null)
 			{
-				if(rtp)
-					vcw.getPlayer1().add(visualComponent);
+				if(m_rtp)
+					m_vcw.getPlayer1().add(visualComponent);
 				else
-					vcw.getPlayer2().add(visualComponent);
+					m_vcw.getPlayer2().add(visualComponent);
 			}
 			else
-				System.err.println("vplayer.getVisualComponent() == null");
+				System.err.println("VideoPlayer.getVisualComponent() == null");
 		}
 	}
 

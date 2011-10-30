@@ -26,6 +26,7 @@ import javax.media.rtp.SendStream;
 import javax.media.rtp.SendStreamListener;
 import javax.media.rtp.SessionAddress;
 import javax.media.rtp.SessionListener;
+import javax.media.rtp.event.ByeEvent;
 import javax.media.rtp.event.NewParticipantEvent;
 import javax.media.rtp.event.NewReceiveStreamEvent;
 import javax.media.rtp.event.NewSendStreamEvent;
@@ -42,69 +43,72 @@ import javax.media.rtp.rtcp.SourceDescription;
 public class RTPConnection implements ControllerListener,
 SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 {
-	private DataSource 			data;
-	private String				remoteIP;
-	private VideoPlayer			player;
-	private int					rtpPort					= 0;
-	private SessionAddress		localSenderAddress		= null;
-	private SessionAddress		remoteReceiverAddress	= null;
-	private Processor			p						= null;
-	private RTPManager			mgr						= null;
-	private SendStream			outStream				= null;
-	private VideoConnection		videoConnection			= null;
+	private		DataSource 			m_dataSource;
+	private		VideoPlayer			m_player;
+	private		String				m_remoteIP;
+	private		int					m_rtpPort					= 0;
+	private		SessionAddress		m_localSenderAddress		= null;
+	private		SessionAddress		m_remoteReceiverAddress		= null;
+	private		Processor			m_processor					= null;
+	private		RTPManager			m_rtpManager				= null;
+	private		SendStream			m_outStream					= null;
+	private		VideoConnection		m_videoConnection			= null;
 	
 	public RTPConnection(VideoConnection vc, DataSource ds, String IP, int Port)
 	{
-		videoConnection = vc;
-		data = ds;
-		remoteIP = IP;
-		rtpPort = Port;
+		m_videoConnection = vc;
+		m_dataSource = ds;
+		m_remoteIP = IP;
+		m_rtpPort = Port;
 		try
 		{
-			p = Manager.createProcessor(data);
-			p.addControllerListener(this);
+			m_processor = Manager.createProcessor(m_dataSource);
+			m_processor.addControllerListener(this);
 		} catch (Exception e)
 		{
-			System.err.println(e.getMessage());
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
 		}
 	}
 
 	public void start()
 	{
-		p.configure();
+		if(m_processor != null)
+			m_processor.configure();
 	}
 	
 	public void stop()
 	{
-		if(p != null)
+		if(m_processor != null)
 		{
-			p.stop();
+			m_processor.stop();
+			m_processor.deallocate();
+			m_processor = null;
 			System.out.println("Processor stopped");
-			p.deallocate();
-			p = null;
 		}
-		if(mgr != null)
+		if(m_rtpManager != null)
 		{
-			mgr.removeTargets("Session ended");
-			mgr.dispose();
-			mgr = null;
+			m_rtpManager.removeTargets("Session ended");
+			m_rtpManager.dispose();
+			m_rtpManager = null;
+			System.out.println("rtpManager stopped");
 		}
 	}
 	
 	public Player getVideoProcessor()
 	{
-		return p;
+		return m_processor;
 	}
 
 	@Override
 	public void controllerUpdate(ControllerEvent event)
 	{
+		if(m_processor == null)
+			return;
 		if (event instanceof ConfigureCompleteEvent)
 		{
-			// Output-Processor-Format setzen
-			p.setContentDescriptor(new ContentDescriptor(ContentDescriptor.RAW_RTP));
-			// Videotrack suchen und Output-Format (+ Codec-Chain) Setzen
-			TrackControl tracks[] = p.getTrackControls();
+			m_processor.setContentDescriptor(new ContentDescriptor(ContentDescriptor.RAW_RTP));
+			TrackControl tracks[] = m_processor.getTrackControls();
 			boolean found = false;
 			for (int i = 0; i < tracks.length; i++)
 			{
@@ -119,28 +123,27 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 					} catch (Exception e)
 					{
 						System.err.println(e.getLocalizedMessage());
+						e.printStackTrace();
 					}
 				}
 				else
 					tracks[i].setEnabled(false);
 			}
-			if (found) // wir habe ein Videotrack mit RGB & JPEG Konversion
-				p.realize();
+			if (found)
+				m_processor.realize();
 			else
-				System.err.println("Kein Videotrack!");
-			// Processor realized event => jetzt kann rtp-manager erzeugt und
-			// konfiguriert werden
+				System.err.println("No Videotrack!");
 		}
 		else if (event instanceof RealizeCompleteEvent)
 		{
-			DataSource dataOutput = p.getDataOutput(); // Output des Processors
-			mgr = RTPManager.newInstance();
-			mgr.addSessionListener(this); // Add „update“-Listeners
-			mgr.addSendStreamListener(this);
-			mgr.addReceiveStreamListener(this);
-			mgr.addRemoteListener(this);
+			DataSource dataOutput = m_processor.getDataOutput();
+			m_rtpManager = RTPManager.newInstance();
+			m_rtpManager.addSessionListener(this);
+			m_rtpManager.addSendStreamListener(this);
+			m_rtpManager.addReceiveStreamListener(this);
+			m_rtpManager.addRemoteListener(this);
 			SourceDescription[] sdes =
-				{ // Sender-Name (geht auch mit Default-Namen)
+				{
 					new SourceDescription(SourceDescription.SOURCE_DESC_CNAME, SourceDescription.generateCNAME(), 1, false),
 					new SourceDescription(SourceDescription.SOURCE_DESC_EMAIL, "julian.junghans@gmail.com", 1, false),
 					new SourceDescription(SourceDescription.SOURCE_DESC_NAME, "Julian Junghans", 1, false)
@@ -148,32 +151,37 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 			InetAddress receiver = null;
 			try
 			{
-				receiver = InetAddress.getByName(remoteIP); // Emfänger-IP
+				receiver = InetAddress.getByName(m_remoteIP);
 			} catch (UnknownHostException e)
 			{
 				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+				return;
 			}
 			try
 			{
-				localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), rtpPort);
-				remoteReceiverAddress = new SessionAddress(receiver, rtpPort, 0);
-				mgr.initialize(new SessionAddress[] { localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
-				mgr.addTarget(remoteReceiverAddress);
-				outStream = mgr.createSendStream(dataOutput, 0);
-				outStream.start();
+				m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_rtpPort);
+				m_remoteReceiverAddress = new SessionAddress(receiver, m_rtpPort);
+				m_rtpManager.initialize(new SessionAddress[] { m_localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
+				m_rtpManager.addTarget(m_remoteReceiverAddress);
+				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
+				m_outStream.start();
 			} catch (Exception e)
 			{
 				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+				return;
 			}
-			p.start(); // Starte Processor
+			m_processor.start();
 			System.out.println("Processor started");
 		}
 		if (event instanceof EndOfMediaEvent)
 		{
-			if(player.getVideoPlayer() == (Player)((EndOfMediaEvent)event).getSource())
+			System.out.println("EndOfMediaEvent!");
+			if(m_player.getVideoPlayer() == (Player)((EndOfMediaEvent)event).getSource())
 			{
-				player.stop();
-				player = null;
+				m_player.stop();
+				m_player = null;
 			}
 		}
 	}
@@ -190,12 +198,12 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 				reportSender = participant.getCNAME();
 			@SuppressWarnings("rawtypes")
 			Vector infos = rr.getFeedbackReports();
-			System.out.println("Feedback von Teilnehmer " + reportSender + ":");
+			System.out.println("Feedback from Participant " + reportSender + ":");
 			Feedback fb = null;
 			for (int i = 0; i < infos.size(); i++)
 			{
 				fb = (Feedback) infos.elementAt(i);
-				System.out.println("Verlorene Pakete: " + fb.getNumLost()
+				System.out.println("Lost Packages: " + fb.getNumLost()
 						+ "   Jitter: " + fb.getJitter());
 			}
 		}
@@ -206,10 +214,10 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	{
 		if (sse instanceof NewSendStreamEvent)
 		{
-			System.out.println("Ein neuer RTP Datenstrom wurde erzeugt!");
+			System.out.println("New RTP DataStream has been created!");
 		} else if (sse instanceof StreamClosedEvent)
 		{
-			System.out.println("RTP Datenstrom wurde geschlossen!");
+			System.out.println("RTP DataStream has been closed!");
 		}
 	}
 
@@ -220,7 +228,7 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		{
 			Participant newReceiver = ((NewParticipantEvent) se).getParticipant();
 			String cname = newReceiver.getCNAME();
-			System.out.println("Neuer Teilnehmer: " + cname);
+			System.out.println("New Participant: " + cname);
 		}
 	}
 	
@@ -228,14 +236,31 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	{
 		if (event instanceof NewReceiveStreamEvent)
 		{
+			Participant newReceiver = ((NewReceiveStreamEvent) event).getParticipant();
+			String cname = "unknown";
+			if(newReceiver != null)
+				cname = newReceiver.getCNAME();
+			System.out.println("New incoming Stream: " + cname);
 			ReceiveStream newStream = ((NewReceiveStreamEvent)event).getReceiveStream();
 			try
 			{
-				player = new VideoPlayer(videoConnection.parent, newStream.getDataSource(),true);
-				player.start();
+				m_player = new VideoPlayer(m_videoConnection.m_parent, newStream.getDataSource(),true);
+				m_player.start();
 			} catch (Exception e)
 			{
 				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+			}
+		}
+		else if(event instanceof ByeEvent)
+		{
+			Participant newReceiver = ((ByeEvent) event).getParticipant();
+			String cname = newReceiver.getCNAME();
+			System.out.println(cname + " closed the stream: " + ((ByeEvent) event).getReason());
+			if(m_player != null)
+			{
+				m_player.stop();
+				m_player = null;
 			}
 		}
 	}

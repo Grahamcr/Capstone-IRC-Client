@@ -19,16 +19,11 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class VideoTestPlayerGUI extends JFrame implements ActionListener
 {
-	private JTextField 	m_ipBox;
-	private JTextField	m_portBox;
-	private JButton		m_startVideoChatButton;
-	private ArrayList<VideoChatWindow> m_playerList;
-//	private PlayerPanel m_playerPanel;
-	/**
-	 * VM Arguments must be -Djava.library.path="path-to-native-librarys"
-	 * example: -Djava.library.path="C:\Users\Julian\Documents\FHH\workspace\IRC-Project\fmj\native\win32-x86"
-	 * @param args 
-	 */
+	private		JTextField					m_ipBox;
+	private		JTextField					m_portBox;
+	private		JButton						m_startVideoChatButton;
+	private		ArrayList<VideoChatWindow>	m_playerList;
+
 	public static void main(String[] args)
 	{
 		@SuppressWarnings("unused")
@@ -39,10 +34,10 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 	{
 		super("Video Capturing & Playback Sample");
 		m_playerList = new ArrayList<VideoChatWindow>();
-//		setSize(640, 480);
-		setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - getWidth())/2, (Toolkit.getDefaultToolkit().getScreenSize().height - getHeight())/2);
+		this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - getWidth())/2,
+					(Toolkit.getDefaultToolkit().getScreenSize().height - getHeight())/2);
  
-		addWindowListener(new WindowAdapter()
+		this.addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent evt)
 			{
@@ -51,6 +46,37 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 			}
 		});
 		
+		buildGUI();
+		
+	}
+	
+	public void stop()
+	{
+		for(VideoChatWindow window: m_playerList)
+		{
+			if(window!=null)
+				window.stop();
+		}
+	}
+
+	public boolean removeFromList(VideoChatWindow window)
+	{
+		return m_playerList.remove(window);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent ae)
+	{
+		if(ae.getActionCommand().equals("Start!"))
+		{
+			VideoChatWindow pp = new VideoChatWindow(this, m_ipBox.getText(), Integer.parseInt(m_portBox.getText()));
+			m_playerList.add(pp);
+			pp.start();
+		}		
+	}
+	
+	private void buildGUI()
+	{
 		JPanel pane = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -74,12 +100,13 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 		pane.add(new JLabel("RTP Port"), c);
 		c.gridx = 0;
 		c.gridy = 1;
-		m_ipBox = new JTextField("192.168.178.31");
+		m_ipBox = new JTextField("224.0.0.1");
+//		m_ipBox = new JTextField("192.168.178.31");
 		m_ipBox.setMinimumSize(d);
 		m_ipBox.setPreferredSize(d);
 		pane.add(m_ipBox, c);
 		c.gridx = 1;
-		m_portBox = new JTextField("22224");
+		m_portBox = new JTextField("3000");
 		m_portBox.setMinimumSize(d);
 		m_portBox.setPreferredSize(d);
 		pane.add(m_portBox, c);
@@ -90,29 +117,8 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 		m_startVideoChatButton.addActionListener(this);
 		m_startVideoChatButton.setActionCommand("Start!");
 		pane.add(m_startVideoChatButton, c);
-		setContentPane(pane);
-		pack();
-		setVisible(true);
+		this.setContentPane(pane);
+		this.pack();
+		this.setVisible(true);
 	}
-	
-	public void stop()
-	{
-		for(VideoChatWindow pp: m_playerList)
-		{
-			if(pp!=null)
-				pp.stop();
-		}
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent ae)
-	{
-		if(ae.getActionCommand().equals("Start!"))
-		{
-			VideoChatWindow pp = new VideoChatWindow(m_ipBox.getText(), Integer.parseInt(m_portBox.getText()));
-			m_playerList.add(pp);
-			pp.start();
-		}		
-	}
-
 }

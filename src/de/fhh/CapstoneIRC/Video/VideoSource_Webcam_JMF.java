@@ -100,27 +100,27 @@ public class VideoSource_Webcam_JMF implements VideoSource
 	public boolean openSource()
 	{
 		// if we got a camera, use the first available
-				if(deviceListVector.size() != 0) 
-				{
-					CaptureDeviceInfo infoCaptureDevice = (CaptureDeviceInfo) deviceListVector.elementAt (2);
-					System.out.println("CaptureDeviceInfo: ");
-					System.out.println(infoCaptureDevice.getName());
-					System.out.println(infoCaptureDevice.getLocator());
-					System.out.println(infoCaptureDevice.getFormats()[0]);
+		if(deviceListVector.size() != 0) 
+		{
+			CaptureDeviceInfo infoCaptureDevice = (CaptureDeviceInfo) deviceListVector.elementAt (2);
+			System.out.println("CaptureDeviceInfo: ");
+			System.out.println(infoCaptureDevice.getName());
+			System.out.println(infoCaptureDevice.getLocator());
+			System.out.println(infoCaptureDevice.getFormats()[0]);
 
-					try
-					{
-						data = Manager.createDataSource(infoCaptureDevice.getLocator());
+			try
+			{
+				data = Manager.createDataSource(infoCaptureDevice.getLocator());
 
-					} catch (Exception e)
-					{
-						System.err.println(e.getMessage());
-						e.printStackTrace();
-						return false;
-					}
-					
-				}
-				return true;
+			} catch (Exception e)
+			{
+				System.err.println(e.getMessage());
+				e.printStackTrace();
+				return false;
+			}
+			
+		}
+		return true;
 	}
 
 	@Override
