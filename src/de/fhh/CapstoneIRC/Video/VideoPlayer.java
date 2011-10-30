@@ -1,7 +1,5 @@
 package de.fhh.CapstoneIRC.Video;
 
-import java.awt.Component;
-
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;
 import javax.media.Manager;
@@ -53,9 +51,9 @@ public class VideoPlayer implements ControllerListener
 		if(m_player != null)
 		{
 			if(m_rtp)
-				m_vcw.getPlayer1().removeAll();
+				m_vcw.setPlayer1(null);
 			else
-				m_vcw.getPlayer2().removeAll();
+				m_vcw.setPlayer2(null);
 			m_player.stop();
 			m_player.deallocate();
 			m_player.close();
@@ -74,14 +72,13 @@ public class VideoPlayer implements ControllerListener
 	{
 		if(c instanceof RealizeCompleteEvent)
 		{
-			Component visualComponent;
 			if(getVideoPlayer() != null)
-			if((visualComponent = getVideoPlayer().getVisualComponent()) != null)
+			if(getVideoPlayer().getVisualComponent() != null)
 			{
 				if(m_rtp)
-					m_vcw.getPlayer1().add(visualComponent);
+					m_vcw.setPlayer1(this);
 				else
-					m_vcw.getPlayer2().add(visualComponent);
+					m_vcw.setPlayer2(this);
 			}
 			else
 				System.err.println("VideoPlayer.getVisualComponent() == null");

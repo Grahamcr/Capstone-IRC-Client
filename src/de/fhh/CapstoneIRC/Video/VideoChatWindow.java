@@ -14,8 +14,10 @@ import javax.swing.JPanel;
 public class VideoChatWindow extends JFrame
 {
 	private		VideoConnection		m_videoConnection;
-	private		JPanel				m_player1;
-	private		JPanel				m_player2;
+	private		JPanel				m_playerPanel1;
+	private		VideoPlayer			m_player1 = null;;
+	private		JPanel				m_playerPanel2;
+	private		VideoPlayer			m_player2 = null;;
 	private		VideoTestPlayerGUI	m_parent;
 	
 	public VideoChatWindow(VideoTestPlayerGUI parent, String IP, int Port)
@@ -45,14 +47,34 @@ public class VideoChatWindow extends JFrame
 		m_videoConnection.stop();
 	}
 
-	public JPanel getPlayer1()
+	public void setPlayer1(VideoPlayer newPlayer)
 	{
-		return m_player1;
+		if(newPlayer == null)
+		{
+			m_playerPanel1.removeAll();
+			return;
+		}
+		if(m_player1 == newPlayer)
+			return;
+		if(m_player1 != null)
+			m_playerPanel1.removeAll();
+		m_player1 = newPlayer;
+		m_playerPanel1.add(m_player1.getVideoPlayer().getVisualComponent());
 	}
 	
-	public JPanel getPlayer2()
+	public void setPlayer2(VideoPlayer newPlayer)
 	{
-		return m_player2;
+		if(newPlayer == null)
+		{
+			m_playerPanel2.removeAll();
+			return;
+		}
+		if(m_player2 == newPlayer || newPlayer == null)
+			return;
+		if(m_player2 != null)
+			m_playerPanel2.removeAll();
+		m_player2 = newPlayer;
+		m_playerPanel2.add(m_player2.getVideoPlayer().getVisualComponent());
 	}
 
 	private void buildGUI(String IP, int Port)
@@ -69,16 +91,16 @@ public class VideoChatWindow extends JFrame
 		this.add(new JLabel("You"), c1);
 		c1.gridx = 0;
 		c1.gridy = 1;
-		m_player1 = new JPanel();
-		m_player1.setMinimumSize(d);
-		m_player1.setPreferredSize(d);
-		this.add(m_player1, c1);
+		m_playerPanel1 = new JPanel();
+		m_playerPanel1.setMinimumSize(d);
+		m_playerPanel1.setPreferredSize(d);
+		this.add(m_playerPanel1, c1);
 		c1.gridx = 1;
 		c1.gridy = 1;
-		m_player2 = new JPanel();
-		m_player2.setMinimumSize(d);
-		m_player2.setPreferredSize(d);
-		this.add(m_player2, c1);
+		m_playerPanel2 = new JPanel();
+		m_playerPanel2.setMinimumSize(d);
+		m_playerPanel2.setPreferredSize(d);
+		this.add(m_playerPanel2, c1);
 		m_videoConnection = new VideoConnection(this, IP, Port);
 		this.pack();
 		this.setVisible(true);

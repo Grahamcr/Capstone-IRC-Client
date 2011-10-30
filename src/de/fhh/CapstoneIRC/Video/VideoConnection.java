@@ -1,17 +1,13 @@
 package de.fhh.CapstoneIRC.Video;
 
-import java.awt.Component;
 import java.io.IOException;
 
-import javax.media.ControllerEvent;
-import javax.media.ControllerListener;
 import javax.media.Manager;
 import javax.media.NoDataSourceException;
-import javax.media.RealizeCompleteEvent;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.SourceCloneable;
 
-public class VideoConnection implements ControllerListener
+public class VideoConnection
 {
 	public		VideoChatWindow		m_parent;
 	private		VideoSource			m_vsource;
@@ -87,32 +83,6 @@ public class VideoConnection implements ControllerListener
 		{
 			m_vsource.closeSource();
 			m_vsource = null;
-		}
-	}
-	
-	@Override
-	public void controllerUpdate(ControllerEvent c)
-	{
-		if(c instanceof RealizeCompleteEvent)
-		{
-			System.err.println(c.getSource().toString());
-			System.err.println(c.getSourceController().toString());
-			Component visualComponent;
-			if(c.getSourceController() == m_vplayer)
-				if(m_vplayer.getVideoPlayer() != null)
-			if((visualComponent = m_vplayer.getVideoPlayer().getVisualComponent()) != null)
-			{
-				m_parent.getPlayer2().add(visualComponent);
-			}
-			else
-				System.err.println("vplayer.getVisualComponent() == null");
-
-			if(c.getSourceController() == m_rtpConn)
-				if(m_rtpConn.getVideoProcessor() != null)
-			if((visualComponent = m_rtpConn.getVideoProcessor().getVisualComponent()) != null)
-			{
-				m_parent.getPlayer1().add(visualComponent);
-			}
 		}
 	}
 }
