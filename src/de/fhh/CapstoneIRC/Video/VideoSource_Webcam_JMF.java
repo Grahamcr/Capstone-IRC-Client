@@ -2,10 +2,13 @@ package de.fhh.CapstoneIRC.Video;
 
 
 
+import java.io.IOException;
+
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
 import javax.media.Format;
 import javax.media.Manager;
+import javax.media.NoDataSourceException;
 import javax.media.format.AudioFormat;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.DataSource;
@@ -97,7 +100,7 @@ public class VideoSource_Webcam_JMF implements VideoSource
 	}
 
 	@Override
-	public boolean openSource()
+	public boolean openSource() throws NoDataSourceException, IOException
 	{
 		// if we got a camera, use the first available
 		if(deviceListVector.size() != 0) 
@@ -107,18 +110,10 @@ public class VideoSource_Webcam_JMF implements VideoSource
 			System.out.println(infoCaptureDevice.getName());
 			System.out.println(infoCaptureDevice.getLocator());
 			System.out.println(infoCaptureDevice.getFormats()[0]);
-
-			try
-			{
-				data = Manager.createDataSource(infoCaptureDevice.getLocator());
-
-			} catch (Exception e)
-			{
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-				return false;
-			}
 			
+			data = Manager.createDataSource(infoCaptureDevice.getLocator());
+			if(data == null)
+				return false;
 		}
 		return true;
 	}

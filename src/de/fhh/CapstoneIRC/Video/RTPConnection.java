@@ -1,5 +1,6 @@
 package de.fhh.CapstoneIRC.Video;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Vector;
@@ -13,10 +14,12 @@ import javax.media.Player;
 import javax.media.Processor;
 import javax.media.RealizeCompleteEvent;
 import javax.media.control.TrackControl;
+import javax.media.format.UnsupportedFormatException;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
 import javax.media.rtp.EncryptionInfo;
+import javax.media.rtp.InvalidSessionAddressException;
 import javax.media.rtp.Participant;
 import javax.media.rtp.RTPManager;
 import javax.media.rtp.ReceiveStream;
@@ -166,12 +169,22 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 				m_rtpManager.addTarget(m_remoteReceiverAddress);
 				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
 				m_outStream.start();
-			} catch (Exception e)
+			} catch (InvalidSessionAddressException e)
 			{
 				System.err.println(e.getLocalizedMessage());
 				e.printStackTrace();
 				return;
-			}
+			}catch (UnsupportedFormatException e)
+			{
+				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+				return;
+			} catch (IOException e)
+			{
+				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+				return;
+			} 
 			m_processor.start();
 			System.out.println("Processor started");
 		}

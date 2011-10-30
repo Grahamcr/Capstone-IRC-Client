@@ -1,10 +1,12 @@
 package de.fhh.CapstoneIRC.Video;
 
 import java.awt.Component;
+import java.io.IOException;
 
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;
 import javax.media.Manager;
+import javax.media.NoDataSourceException;
 import javax.media.RealizeCompleteEvent;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.SourceCloneable;
@@ -32,7 +34,33 @@ public class VideoConnection implements ControllerListener
 	public void start()
 	{
 		System.out.println("VideoConnection->start()");
-		m_vsource.openSource();
+		/* NOTEBOOK WORKAROUND */
+		// try to open the webcam for 5 times;
+		int tries = 0;
+		boolean successfull = false;
+		do
+		{
+			try
+			{
+				++tries;
+				if(m_vsource.openSource())
+					successfull = true;
+			} catch (NoDataSourceException | IOException e)
+			{
+				if(tries >= 5)
+				{
+					System.err.println(e.getLocalizedMessage());
+					e.printStackTrace();
+				}
+			}
+		}while(!successfull && tries < 5);
+		if(!successfull)
+		{
+			System.err.println("Could not open the Webcam Device!");
+			return;
+		}
+		if(tries > 1)
+			System.out.println("Needed " + tries + " tries to open the Webcam Device!");
 		m_dataSource = m_vsource.getDataSource();
 		m_dataSource = Manager.createCloneableDataSource(m_dataSource);
 		m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
