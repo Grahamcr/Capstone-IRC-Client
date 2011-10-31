@@ -229,7 +229,7 @@ public class TFTP
                 }
                 byteCounter = byteCounter + 512;
                 index++;
-                sendPacket(512, buffer);
+                sendPacket(512, buffer, true, false);
             }
             //send the last packet
             last = true;
@@ -238,7 +238,7 @@ public class TFTP
             for(int g = byteCounter; g < byteCounter+remainingBytes; g++) {
                 buff[g - byteCounter] = fileToSend[g];
             }
-            sendPacket(remainingBytes, buff);
+            sendPacket(remainingBytes, buff, true, false);
             one = (byte)0;
             two = (byte)0;
             haveTime = true;
@@ -254,13 +254,16 @@ public class TFTP
      * Send each data packet of the file to the client - keep watch for a 
      * timeout that could occur.   
      ***********************************************************************/
-    public void sendPacket(final int packetSize, final byte[] buffer ) {
+    public void sendPacket(final int packetSize, final byte[] buffer, boolean time, boolean error) {
         try {
+            haveTime = time;
             //send and wait for ack - if no ack in 30 sec send again
             byte[] out = new byte[packetSize+4];
             out[0] = (byte)0;
             out[1] = (byte)3;
-            generateBlockNumbers();
+            if(!error) {
+                generateBlockNumbers();
+            }
             out[2] = (byte)two;
             out[3] = (byte)one;
             for(int g = 4; g < packetSize; g++) {
@@ -288,10 +291,10 @@ public class TFTP
 
             timer.schedule(new TimerTask() {
                     public void run() {
-                        System.out.println("timeout occured");
-                        haveTime = false;
-                       sendPacket(packetSize, buffer); 
-                      timer.cancel();
+                       System.out.println("timeout occured");
+                       haveTime = false;
+                       sendPacket(packetSize, buffer, true, true); 
+                       timer.cancel();
                     }
                }, timeToRun);
             int count = 0;
