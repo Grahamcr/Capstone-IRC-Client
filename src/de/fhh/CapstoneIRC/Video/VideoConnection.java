@@ -41,7 +41,8 @@ public class VideoConnection
 				++tries;
 				if(m_vsource.openSource())
 					successfull = true;
-			} catch (NoDataSourceException | IOException e)
+			} //catch (NoDataSourceException | IOException e)
+			 catch (Exception e)
 			{
 				if(tries >= 5)
 				{
