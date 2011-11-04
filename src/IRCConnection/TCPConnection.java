@@ -8,6 +8,18 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
+/**
+ * 
+ * @author Holger Rocks
+ *
+ *	This class is the basic TCP-IP system. All commands will
+ *	be received or sended by this class. It works as a buffered 
+ *	Stream-reader, which returns the TCP-Stream line by line.
+ *	If there is no new line, the class will wait until there is
+ *	any new text. 
+ *
+ *	ATTENTION: This class can lock your code.
+ */
 public class TCPConnection implements Runnable {
 
 	java.net.Socket socket = null;

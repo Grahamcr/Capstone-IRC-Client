@@ -7,10 +7,21 @@ import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
-import ServerGuiCommunicationInterface.UserInfo;
 import ServerGuiCommunicationInterface.UserInfoInterface;
-import ServerGuiCommunicationInterface.UserList;
 
+
+
+/**
+ * 
+ * @author Holger Rocks
+ *
+ *	This class is the main IRC-receiver.
+ *	It opens a TCP-Connection to any given IRC-Server and
+ *	is able to receive and send IRC-Messages
+ *
+ *	This class can be used several times side by side for multi-server
+ *	IRC-Clients. 
+ */
 public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface {
 
 	private TCPConnection tcp = null;
@@ -72,66 +83,39 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	       else if( commandToken.equals("JOIN") )
 	       {
 	    	   String user = getNameFromToken(firstToken);	   
-	    	   
-	    	   if(user != this.getCurrentUser().getName())
-	    	   {
-	    		   String channel = st.nextToken().substring(1);
-		    	   IrcChannel c = chanList.getIrcChannel(channel);
-		    	   if( c != null)
-		    	   {
-		    		    c.addUser(  globalUserList.addUser(new UserInfo(user)), user );
-		    		    guiConnection.updateChannel();
-		    	   }
-	    	   }
-	    	   
-	    	   
+	    	   userJoinsChannel(user, st);
 	       }
 	       else if( commandToken.equals("QUIT"))
 	       {
 	    	   String user = getNameFromToken(firstToken);	
-	    	   chanList.removeUserFromChannels(user);
-	    	   guiConnection.updateChannel(); 
+	    	   userQuitsChannel(user);
 	       }
 	       else if( commandToken.equals("353")) // Start userlist of a given Channel
 	       {
-	    	   st.nextToken();
-	    	   st.nextToken();
-	    	   
-	    	   String channel = st.nextToken();
-	    	   
-	    	   IrcChannel chan = chanList.getIrcChannel(channel);
-	    	   
-	    	   if( chan == null)
-	    	   {
-	    		   chanList.addChannel(channel, null);
-	    		   chan = chanList.getIrcChannel(channel);
-	    	   }
-	    	   // Clear all entrys and start a new list
-	    	   // the whole list will be received from the Server
-	    	   chan.getUserList().removeAllUser();
-	    	   
-	    	   // The first username starts with a ':'
-	    	   // clear this char
-	    	   String name = st.nextToken().substring(1);
-	    	   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
-	    	   
-	    	   // fill the list
-	    	   while(st.hasMoreTokens())
-	    	   {
-	    		   name = st.nextToken();
-	    		   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
-	    	   }
-	    	   
-	    	   guiConnection.openChannel(chan, false);
+	    	   openNewChannel(st);
 	       }  
 	       else if( commandToken.equals("366"))
 	       {
-	    	   st.nextToken();
-	    	   
-	    	   String channel = st.nextToken();
-	    	   IrcChannel chan = chanList.getIrcChannel(channel);
-	    	   guiConnection.openChannel(chan, false);
+	    	   openNewChannelReady(st);
 	       }
+	       else if( commandToken.equals("311") || commandToken.equals("312") ||
+	    		    commandToken.equals("317") || commandToken.equals("318") ||
+	    		    commandToken.equals("319"))
+	       {
+	    	   UserInfo u = globalUserList.readWhoIsInfo(line);
+	    	   
+	    	   if( u != null ) // if user != null, then we are ready with reading user info
+	    	   {
+	    		   guiConnection.writeString(u.getServer(), u.toString());
+	    	   }
+	       }
+	       else if( commandToken.equals("401") )
+	       {
+	    	   st.nextToken();
+	    	   String userInput = st.nextToken();
+	    	   guiConnection.writeString( firstToken.substring(1), "User \"" + userInput + "\" not found");
+	       }
+	    	   
 		}
 	}
 
@@ -224,4 +208,68 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		//tcp.sendMessage()
 		
 	}
+	
+	public void userQuitsChannel(String user)
+	{
+		chanList.removeUserFromChannels(user);
+ 	   guiConnection.updateChannel(); 
+	}
+	
+	public void userJoinsChannel(String user, StringTokenizer st)
+	{
+		 if(user != this.getCurrentUser().getName())
+  	   {
+  		   String channel = st.nextToken().substring(1);
+    	   IrcChannel c = chanList.getIrcChannel(channel);
+    	   if( c != null)
+    	   {
+    		    c.addUser(  globalUserList.addUser(new UserInfo(user)), user );
+    		    guiConnection.updateChannel();
+    	   }
+  	   }
+	}
+	
+	public void openNewChannel(StringTokenizer st)
+	{
+		st.nextToken();
+ 	   st.nextToken();
+ 	   
+ 	   String channel = st.nextToken();
+ 	   
+ 	   IrcChannel chan = chanList.getIrcChannel(channel);
+ 	   
+ 	   if( chan == null)
+ 	   {
+ 		   chanList.addChannel(channel, null);
+ 		   chan = chanList.getIrcChannel(channel);
+ 	   }
+ 	   
+ 	   // Clear all entrys and start a new list
+ 	   // the whole list will be received from the Server
+ 	   chan.getUserList().removeAllUser();
+ 	   
+ 	   // The first username starts with a ':'
+ 	   // clear this char
+ 	   String name = st.nextToken().substring(1);
+ 	   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
+ 	   
+ 	   // fill the list
+ 	   while(st.hasMoreTokens())
+ 	   {
+ 		   name = st.nextToken();
+ 		   chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
+ 	   }
+ 	   
+ 	   guiConnection.openChannel(chan, false);
+	}
+	
+	public void openNewChannelReady(StringTokenizer st)
+	{
+		st.nextToken();
+ 	   
+ 	   String channel = st.nextToken();
+ 	   IrcChannel chan = chanList.getIrcChannel(channel);
+ 	   guiConnection.openChannel(chan, false);
+	}
+	
 }

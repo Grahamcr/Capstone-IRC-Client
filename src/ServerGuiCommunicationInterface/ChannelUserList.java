@@ -3,6 +3,8 @@ package ServerGuiCommunicationInterface;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import IRCConnection.UserInfo;
+
 public class ChannelUserList {
 
 	private ArrayList<ChannelUser> userList = new ArrayList<ChannelUser>();

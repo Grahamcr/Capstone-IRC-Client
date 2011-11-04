@@ -2,6 +2,8 @@ package ServerGuiCommunicationInterface;
 
 import java.util.ArrayList;
 
+import IRCConnection.UserInfo;
+
 public class IrcChannel {
 	String name;
 	String topic;

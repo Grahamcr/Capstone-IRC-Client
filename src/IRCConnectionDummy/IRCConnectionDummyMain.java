@@ -1,12 +1,12 @@
 package IRCConnectionDummy;
 
+import IRCConnection.UserInfo;
+import IRCConnection.UserList;
 import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
-import ServerGuiCommunicationInterface.UserInfo;
 import ServerGuiCommunicationInterface.UserInfoInterface;
-import ServerGuiCommunicationInterface.UserList;
 
 public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInterface
 {

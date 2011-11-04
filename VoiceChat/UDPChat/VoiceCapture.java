@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.swing.Popup;
 
 /***************************************************************************************************
  * Write a description of class VoiceClient here.
@@ -27,6 +28,12 @@ public class VoiceCapture extends JFrame {
     
     SourceDataLine sourceDataLine;
     
+    String address;
+    
+ //   JFrame f;
+    
+ //   JLabel message;
+    
     /**Temp only**/
     JButton captureBtn;
     JButton stopBtn;
@@ -37,16 +44,25 @@ public class VoiceCapture extends JFrame {
      * Constructor - used only at this point to set up temp GUI screen
      *********************************************************************************************/
     public VoiceCapture() {
+        String input = null;
+        while(input == null || input.equals("")) {
+            input = JOptionPane.showInputDialog(null, "Please, Enter the IP Address To Chat With");
+         }
+         address = input.trim();
         setLayout(new FlowLayout());
-        JButton captureBtn = new JButton("Capture");
+        JButton captureBtn = new JButton("Chat");
         JButton stopBtn = new JButton("Stop");
    
         add(captureBtn);
-        add(stopBtn);
-   
-        
+//        add(stopBtn);
+        setSize(100,100);
+  //      f = new JFrame();
+  //      f.setSize(100,100);        
+ //       message = new JLabel("Looking for input line....");
+  //      f.add(message);
       captureBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+//                 f.setVisible(true);
                 captureAudio(0);
             }
        }
@@ -74,15 +90,17 @@ public class VoiceCapture extends JFrame {
      * data.  Data is written to a ByteArrayOutputStream to be potenitally transmitted to 
      * other client. 
      **********************************************************************************************/
-    private void captureAudio(int mInt){
+    private void captureAudio(int mInt){       
+       
     try{
+     // Thread.sleep(1000);
       //Get and display a list of available mixers.
       Mixer.Info[] mixerInfo =  AudioSystem.getMixerInfo();
       
-      System.out.println("Available mixers:");
-      for(int cnt = 0; cnt < mixerInfo.length; cnt++){
-        System.out.println(mixerInfo[cnt].getName());
-      }
+     // System.out.println("Available mixers:");
+     // for(int cnt = 0; cnt < mixerInfo.length; cnt++){
+    //    System.out.println(mixerInfo[cnt].getName());
+    //  }
 
       //set everything set up for capture provided by javax.sound
       audioFormat = getAudioFormat();
@@ -91,7 +109,7 @@ public class VoiceCapture extends JFrame {
 
       //Select one of the available mixers provided by javax.sound
       Mixer mixer = AudioSystem.getMixer(mixerInfo[mInt]);
-      System.out.println("Found a line that works! Good To Start Chat");
+   //  System.out.println("Found a line that works! Good To Start Chat");
       //Get a TargetDataLine on the selected mixer.
       targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
       
@@ -100,14 +118,18 @@ public class VoiceCapture extends JFrame {
       targetDataLine.start();
 
       //Create a thread to capture the microphone
+ //     message.setText("All Set Up - Lets Chat !");
+ //     Thread.sleep(2000);
+ //     f.setVisible(false);
       Thread captureThread = new CaptureThread();
       captureThread.start();
       playRecorded();
     } catch (IllegalArgumentException e) {
         captureAudio(mInt+1);
-      System.out.println("That Line Didn't work....trying another");
+//      message.setText("That Line Didn't work....trying another");
+      
     } catch(Exception e) {
-        System.out.println("Found an error I don't know how to handle" + e);
+//        message.setText("Found an error I don't know how to handle" + e);
     }
   }
     
@@ -173,8 +195,9 @@ public class VoiceCapture extends JFrame {
         int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
         
         //Name or explicit IP Address - right now just send it back to me for testing purposes
-        InetAddress ipAddress = InetAddress.getByName("127.0.0.1");
-        
+        //InetAddress ipAddress = InetAddress.getByName("127.0.0.1");
+        InetAddress ipAddress = InetAddress.getByName(address);
+
         //For now just use a random port number
         int port = 9876;
         
@@ -255,4 +278,3 @@ class PlayThread extends Thread{
 }
 
 }
-
