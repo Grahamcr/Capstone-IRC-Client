@@ -52,7 +52,7 @@ public class VoicePlayer extends Thread{
  
     public void run() {
     	int left = 0;
-    	byte[] buffer = new byte[2200];
+    	byte[] buffer = new byte[4400];
     	boolean run = true;
     	sourceLine.start();
        while (run) {
@@ -60,24 +60,18 @@ public class VoicePlayer extends Thread{
             try {
             	
                 while ((left = audioInputStream.read(buffer, 0, buffer.length)) != -1) {
-                	System.out.println(left + " Bytes gehšrt");
-                    if (left > 0) // data still left to write
-                    {
-                        int writtenbytes = sourceLine.write(buffer, 0, left);
-                        System.out.println(writtenbytes + " Bytes gesprochen");
-                        // the line
+                    if (left > 0) {
+                        sourceLine.write(buffer, 0, left);
                     }
  
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-                run = false;
             }
  
-            sourceLine.drain(); // clear buffer
+            sourceLine.drain(); 
  
-            sourceLine.close(); // close line
+            sourceLine.close(); 
  
         }
     }

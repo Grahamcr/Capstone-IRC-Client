@@ -8,7 +8,7 @@ import org.xiph.speex.spi.Pcm2SpeexAudioInputStream;
 
 public class VoiceEncoder {
 	
-	private AudioInputStream encode;
+	private Pcm2SpeexAudioInputStream encode;
 	private AudioFormat audioFormat;
 	private Thread encoder;
 	
