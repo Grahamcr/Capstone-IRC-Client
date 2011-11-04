@@ -183,7 +183,6 @@ public class Speex2PcmAudioInputStream
           throw new StreamCorruptedException("The given stream does not appear to be Ogg.");
         }
         streamSerialNumber = readInt(prebuf, 14);
-        System.out.println(new String(prebuf, 0, 40));
         if (!(new String(prebuf, 28, 8).equals("Speex   "))) {
           throw new StreamCorruptedException("The given stream does not appear to be Ogg Speex.");
         }
@@ -491,7 +490,6 @@ public class Speex2PcmAudioInputStream
       }
     }
     if (precount-prepos>=27) { // can read beginning of Page header
-    	System.out.println(new String(prebuf, prepos, 4));
       if (!(new String(prebuf, prepos, 4).equals("OggS"))) {
         throw new StreamCorruptedException("Lost Ogg Sync");
       }
