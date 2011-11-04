@@ -1,6 +1,6 @@
 package IRCMain;
 
-import ICGuiDummy.IRCGuiDummyMain;
+import ICGuiDummy.IRCGuiMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 
 
@@ -25,7 +25,7 @@ public class IrcClientMain {
 		
 		
 		// Create the GUI and start operation
-		IrcGuiInterface gui = new IRCGuiDummyMain();
+		IrcGuiInterface gui = new IRCGuiMain();
 		// Add the Connection to the GUI. You can send Text with this Interface
 		//gui.addIrcServer(ircConnection);
 		// Start working
