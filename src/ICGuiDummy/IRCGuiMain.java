@@ -33,7 +33,7 @@ import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
 import ServerGuiCommunicationInterface.UserInfoInterface;
 
-public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
+public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
 	/**
 	 * 
@@ -54,10 +54,6 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		private final String progVersion = new String("no_version");
 		 
 		IrcChannel currentChannel;
-		//TextField 	ipAdressBox;
-		//TextField 	portBox;
-		//TextField 	channelBox;
-		//TextField	userNameBox;
 		
 		JButton		openConnectionButton;
 		TextField 	chatInputBox;
@@ -77,7 +73,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		
 		
 
-		public IRCGuiDummyMain() 
+		public IRCGuiMain() 
 		{
 			this.getContentPane().setLayout(null);
 			this.initWindow();
@@ -113,18 +109,9 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		protected void initWindow() 
 		{
 			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			// Instanzieren:
-			//ipLabel = new JLabel();
-			//portLabel = new JLabel();
-			//chanLabel = new JLabel();
-			//userNameLabel = new JLabel();
-			
-			//userNameBox = new TextField();
+
 			chatInputBox = new TextField();
 			chatMessageBox = new JTextArea();
-			//ipAdressBox = new TextField();
-			//portBox = new TextField();
-			//channelBox = new TextField();
 			openConnectionButton = new JButton();
 			userList = new JList(listModel);
 			
@@ -186,29 +173,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			          });
 			
 			
-			
-	        
-			
-			
-			// connection elements
-			//ipLabel.setBounds(5,20, 80, 20);
-			//ipLabel.setText("IP Adress:");
-			//ipAdressBox.setBounds(95, 20, 130, 20);
-			
-			
-			//portLabel.setBounds(235,20, 40, 20);
-			//portLabel.setText("Port:");
-			//portBox.setBounds(285, 20, 70, 20);
-			
-			
-			//chanLabel.setBounds(5,50, 80, 20);
-			//chanLabel.setText("Channel:");
-			//channelBox.setBounds(95, 50, 80, 20);
-			
-			//userNameLabel.setBounds(5,50, 80, 20);
-			//userNameLabel.setText("Name:");
-			//userNameBox.setBounds(95, 50, 80, 20);
-			
+		
 			menuBar = new JMenuBar();
 			
 			file = new JMenu("File");
@@ -321,14 +286,6 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			openConnectionButton.setText("Connect");
 			openConnectionButton.getAccessibleContext().setAccessibleDescription(
 				"Connect to a network.");
-			
-			
-
-			//ipAdressBox.setText("irc.quakenet.org");
-			//ipAdressBox.setText("127.0.0.1");
-			//portBox.setText("6667");
-			//channelBox.setText("#test");
-			//userNameBox.setText("Holger30");
 
 			// chat elements
 			chatInputBox.setBounds(5, 400,500, 25);
@@ -344,19 +301,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			this.getContentPane().add(chatMessageBox);
 			this.getContentPane().add(submit);
 			this.getContentPane().add(userList);
-
-			//this.getContentPane().add(ipLabel);
-			//this.getContentPane().add(ipAdressBox);
-			
-			//this.getContentPane().add(portLabel);
-			//this.getContentPane().add(portBox);
-			
-			//this.getContentPane().add(chanLabel);
-			//this.getContentPane().add(channelBox);
-			
 			this.getContentPane().add(openConnectionButton);
-			//this.getContentPane().add(userNameBox);
-			//this.getContentPane().add(userNameLabel);
 
 			this.pack();
 		
@@ -374,9 +319,6 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			ircConnection.setTextReceiver(this);
 			
 			ircConnection.openConnection(ipAddr, portNumber, userName, userName);
-			
-			
-			//ircConnection.sendText("join "+ channelBox.getText());
 		}
 
 		public void submitClicked()
