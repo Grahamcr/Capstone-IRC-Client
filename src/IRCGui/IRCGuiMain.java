@@ -4,7 +4,7 @@ Errors I've found (donleyj):
 /quit throws an exception
 */
 
-package ICGuiDummy;
+package IRCGui;
 
 import java.awt.TextField;
 import java.awt.event.ActionEvent;

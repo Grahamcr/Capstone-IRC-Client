@@ -1,6 +1,6 @@
 package IRCMain;
 
-import ICGuiDummy.IRCGuiMain;
+import IRCGui.IRCGuiMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 
 
