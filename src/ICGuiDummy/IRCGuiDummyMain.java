@@ -1,3 +1,9 @@
+/*
+Errors I've found (donleyj):
+/msg doesn't work
+/quit throws an exception
+*/
+
 package ICGuiDummy;
 
 import java.awt.TextField;
@@ -14,6 +20,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextArea;
+import javax.swing.JOptionPane;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
@@ -33,23 +43,36 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		private UserInfoInterface userInfo = null;
 		private DefaultListModel listModel = new DefaultListModel();
 		private IrcServerInterface ircServer = null;
+		
+		private String ipAddr = new String("");
+		private int portNumber = 0;
+		private String userName = new String("");
+		
+		// the program name; feel free to change it
+		private final String progName = new String("GVIRC");
+		// version; same as above
+		private final String progVersion = new String("no_version");
 		 
 		IrcChannel currentChannel;
-		TextField 	ipAdressBox;
-		TextField 	portBox;
+		//TextField 	ipAdressBox;
+		//TextField 	portBox;
 		//TextField 	channelBox;
-		TextField	userNameBox;
+		//TextField	userNameBox;
 		
 		JButton		openConnectionButton;
 		TextField 	chatInputBox;
 		JTextArea 	chatMessageBox;
 		JButton		submit;
 		JList 	userList;
+		JMenuBar	menuBar;
+		JMenu	file, help;
+		JMenuItem	connect, exit, cliHelp, about;
+		JFrame	frame;
 
-		JLabel ipLabel;
-		JLabel portLabel;
+		//JLabel ipLabel;
+		//JLabel portLabel;
 		//JLabel chanLabel;
-		JLabel userNameLabel;
+		//JLabel userNameLabel;
 		
 		
 		
@@ -82,25 +105,25 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 		public void run() {
 			// TODO Auto-generated method stub
 			
-			this.setBounds(10, 10, 540, 580);
+			this.setBounds(10, 10, 640, 480);
 			this.setVisible(true);	
 			
 		}
 		
 		protected void initWindow() 
 		{
-				
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			// Instanzieren:
-			ipLabel = new JLabel();
-			portLabel = new JLabel();
+			//ipLabel = new JLabel();
+			//portLabel = new JLabel();
 			//chanLabel = new JLabel();
-			userNameLabel = new JLabel();
+			//userNameLabel = new JLabel();
 			
-			userNameBox = new TextField();
+			//userNameBox = new TextField();
 			chatInputBox = new TextField();
 			chatMessageBox = new JTextArea();
-			ipAdressBox = new TextField();
-			portBox = new TextField();
+			//ipAdressBox = new TextField();
+			//portBox = new TextField();
 			//channelBox = new TextField();
 			openConnectionButton = new JButton();
 			userList = new JList(listModel);
@@ -118,12 +141,35 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			
 			
 			openConnectionButton.addActionListener(new ActionListener() {
-
 				public void actionPerformed(ActionEvent arg0) {
+					String tempPort = new String("");
+					ipAddr = JOptionPane.showInputDialog(
+						"Enter the server name or IP");
+					if (ipAddr == null) {
+						return;
+					}
+					tempPort = JOptionPane.showInputDialog(
+						"Enter the port number");
+					if (tempPort == null) {
+						return;
+					}
+					try {
+						portNumber = Integer.parseInt(tempPort);
+					} catch (NumberFormatException nfe) {
+						JOptionPane.showMessageDialog(null,
+							"Not a number.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					userName = JOptionPane.showInputDialog(
+						"Enter your user name");
+					if (userName == null) {
+						return;
+					}
 					// TODO Auto-generated method stub
 					openConnection();
 				}
-
 			});
 			
 			
@@ -141,69 +187,176 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			
 			
 			
-
-
 	        
 			
 			
 			// connection elements
-			ipLabel.setBounds(5,20, 80, 20);
-			ipLabel.setText("IP Adress:");
-			ipAdressBox.setBounds(95, 20, 130, 20);
+			//ipLabel.setBounds(5,20, 80, 20);
+			//ipLabel.setText("IP Adress:");
+			//ipAdressBox.setBounds(95, 20, 130, 20);
 			
 			
-			portLabel.setBounds(235,20, 40, 20);
-			portLabel.setText("Port:");
-			portBox.setBounds(285, 20, 70, 20);
+			//portLabel.setBounds(235,20, 40, 20);
+			//portLabel.setText("Port:");
+			//portBox.setBounds(285, 20, 70, 20);
 			
 			
 			//chanLabel.setBounds(5,50, 80, 20);
 			//chanLabel.setText("Channel:");
 			//channelBox.setBounds(95, 50, 80, 20);
 			
-			userNameLabel.setBounds(5,50, 80, 20);
-			userNameLabel.setText("Name:");
-			userNameBox.setBounds(95, 50, 80, 20);
+			//userNameLabel.setBounds(5,50, 80, 20);
+			//userNameLabel.setText("Name:");
+			//userNameBox.setBounds(95, 50, 80, 20);
 			
-			openConnectionButton.setBounds(365, 50, 120, 20);
-			openConnectionButton.setText("open Connection");
+			menuBar = new JMenuBar();
 			
+			file = new JMenu("File");
+			file.setMnemonic(KeyEvent.VK_F);
+			file.getAccessibleContext().setAccessibleDescription(
+				"File Menu. Options are related to the program's behavior.");
+			
+			connect = new JMenuItem("Connect");
+			connect.getAccessibleContext().setAccessibleDescription(
+				"Connect to a network.");
+			
+			exit = new JMenuItem("Exit");
+			exit.getAccessibleContext().setAccessibleDescription(
+				"Exit the program.");
+			
+			help = new JMenu("Help");
+			help.setMnemonic(KeyEvent.VK_H);
+			help.getAccessibleContext().setAccessibleDescription(
+				"Help Menu. Program help and version information.");
+			
+			cliHelp = new JMenuItem("Help");
+			cliHelp.getAccessibleContext().setAccessibleDescription(
+				"Help documentation.");
+				
+			about = new JMenuItem("About " + progName);
+			about.getAccessibleContext().setAccessibleDescription(
+				"Program version information.");
+			
+			menuBar.add(file);
+			file.add(connect);
+			file.add(exit);
+			
+			menuBar.add(help);
+			help.add(cliHelp);
+			help.add(about);
+			
+			setJMenuBar(menuBar);
+			
+			connect.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					String tempPort = new String("");
+					ipAddr = JOptionPane.showInputDialog(
+						"Enter the server name or IP");
+					if (ipAddr == null) {
+						return;
+					}
+					tempPort = JOptionPane.showInputDialog(
+						"Enter the port number");
+					if (tempPort == null) {
+						return;
+					}
+					try {
+						portNumber = Integer.parseInt(tempPort);
+					} catch (NumberFormatException nfe) {
+						JOptionPane.showMessageDialog(null,
+							"Not a number.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					userName = JOptionPane.showInputDialog(
+						"Enter your user name");
+					if (userName == null) {
+						return;
+					}
+					// TODO Auto-generated method stub
+					openConnection();
+				}
+			});
+
+
+			exit.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+					if(JOptionPane.showConfirmDialog(null,
+						"Exit?",
+						"Exit Confirmation",
+						JOptionPane.YES_NO_OPTION)
+						== JOptionPane.YES_OPTION) {
+						dispose();
+					}
+				}
+
+			});
+
+			cliHelp.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+					JOptionPane.showMessageDialog(null,
+						"Not implemented.", // body
+						"Application Help", // title
+						JOptionPane.WARNING_MESSAGE);
+				}
+
+			});
+
+			about.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent arg0) {
+					JOptionPane.showMessageDialog(frame,
+						progName + ", version " + progVersion, // body
+						"Version Information", // title
+						JOptionPane.INFORMATION_MESSAGE);
+				}
+
+			});
+
+			
+			openConnectionButton.setBounds(5, 5, 120, 20);
+			openConnectionButton.setText("Connect");
+			openConnectionButton.getAccessibleContext().setAccessibleDescription(
+				"Connect to a network.");
 			
 			
 
 			//ipAdressBox.setText("irc.quakenet.org");
-			ipAdressBox.setText("127.0.0.1");
-			portBox.setText("6667");
+			//ipAdressBox.setText("127.0.0.1");
+			//portBox.setText("6667");
 			//channelBox.setText("#test");
-			userNameBox.setText("Holger30");
+			//userNameBox.setText("Holger30");
 
 			// chat elements
-			chatInputBox.setBounds(5, 505,300, 25);
-			chatMessageBox.setBounds(5,90,400,400);
+			chatInputBox.setBounds(5, 400,500, 25);
+			chatMessageBox.setBounds(5,30,500,365);
 			chatMessageBox.setEditable(false);
-			userList.setBounds(430, 90, 100, 435);
-			submit.setBounds(310,505,100,30);
+			userList.setBounds(510, 30, 120, 365);
+			submit.setBounds(510,400,120,30);
 			
 			
 
-			// Elemente dem Fenster hinzufügen:
+			// Elemente dem Fenster hinzuf?gen:
 			this.getContentPane().add(chatInputBox);
 			this.getContentPane().add(chatMessageBox);
 			this.getContentPane().add(submit);
 			this.getContentPane().add(userList);
 
-			this.getContentPane().add(ipLabel);
-			this.getContentPane().add(ipAdressBox);
+			//this.getContentPane().add(ipLabel);
+			//this.getContentPane().add(ipAdressBox);
 			
-			this.getContentPane().add(portLabel);
-			this.getContentPane().add(portBox);
+			//this.getContentPane().add(portLabel);
+			//this.getContentPane().add(portBox);
 			
 			//this.getContentPane().add(chanLabel);
 			//this.getContentPane().add(channelBox);
 			
 			this.getContentPane().add(openConnectionButton);
-			this.getContentPane().add(userNameBox);
-			this.getContentPane().add(userNameLabel);
+			//this.getContentPane().add(userNameBox);
+			//this.getContentPane().add(userNameLabel);
 
 			this.pack();
 		
@@ -220,7 +373,7 @@ public class IRCGuiDummyMain extends JFrame implements IrcGuiInterface {
 			addIrcServer(ircConnection);
 			ircConnection.setTextReceiver(this);
 			
-			ircConnection.openConnection(ipAdressBox.getText(), Integer.parseInt(portBox.getText()), userNameBox.getText(), userNameBox.getText());
+			ircConnection.openConnection(ipAddr, portNumber, userName, userName);
 			
 			
 			//ircConnection.sendText("join "+ channelBox.getText());
