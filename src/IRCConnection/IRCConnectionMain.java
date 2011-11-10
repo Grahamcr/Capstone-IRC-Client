@@ -3,6 +3,7 @@ package IRCConnection;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import Audio.AudioConnection;
 import IRCGui.GetClientIP;
 import ServerGuiCommunicationInterface.IrcChannel;
 import ServerGuiCommunicationInterface.IrcChannelList;
@@ -33,6 +34,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	String serverName = "";
 	UserList globalUserList = new UserList();
 	private HashMap<String, Boolean> videoRequstMap = new HashMap<String, Boolean>();
+	private HashMap<String, AudioConnection> audioConnMap = new HashMap<String, AudioConnection>();
+	
 	
 	
 	@Override
@@ -95,6 +98,23 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			    			   }
 			    			   
 			    		   }
+		    		   }
+		    		   catch(Exception e)
+		    		   {
+		    			   
+		    		   }
+		    		   
+		    	   }
+		    	   else if(tok.nextToken().equals("DAC") ) // it is a video connection, if the next parameters are ok!
+		    	   {
+		    		   try
+		    		   {
+			    		   int ip = Integer.parseInt(tok.nextToken());
+		    			   int port = Integer.parseInt(tok.nextToken());
+		    			   System.out.println(ip + " " + port);
+			    		   
+		    			   guiConnection.openAudioConnection(user,GetClientIP.intToIpAdress(ip), port);
+		    			   
 		    		   }
 		    		   catch(Exception e)
 		    		   {
@@ -315,6 +335,29 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     	videoRequstMap.put(username, true);
     	
     	this.sendCommandMessage(username, message);
+	}
+
+	
+	@Override
+	public void openAudioConnection(String username, int port) {
+		// TODO Auto-generated method stub
+		String ip = GetClientIP.getAdress();
+    	String message = "DAC " + GetClientIP.getAdresAsInt() + " " + port;
+    	
+    	if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
+    	{
+    		
+    	}
+    	else
+    	{
+    		AudioConnection audio = new AudioConnection();
+    		audio.waitForAudioConnection(port);
+        	audio.setConnectionOpened(true);
+        	audioConnMap.put(username, audio);
+    	}
+    	
+    	this.sendCommandMessage(username, message);
+    	
 	}
 	
 }

@@ -140,6 +140,12 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 		
 	}
 
+	@Override
+	public void openAudioConnection(String username, int port) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 	
