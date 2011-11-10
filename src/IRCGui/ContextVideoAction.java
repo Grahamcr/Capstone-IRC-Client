@@ -24,7 +24,11 @@ class ContextVideoAction extends AbstractAction{
     } 
  
     public void actionPerformed(ActionEvent e){ 
-        conn.sendText("DVC " + comp.getSelectedValue());
+    	
+    	int port = 6668;
+    	String user = comp.getSelectedValue().toString();
+    	
+        conn.openVideoConnection(user, port);
     } 
  
     public boolean isEnabled()

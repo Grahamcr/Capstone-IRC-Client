@@ -6,6 +6,10 @@ Errors I've found (donleyj):
 
 package IRCGui;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
@@ -431,5 +435,37 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		public void addUserInfoInterface(UserInfoInterface info) {
 			userInfo = info;
 			
+		}
+
+		@Override
+		public void openVideoConnection(String username, String ip, int port) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		/**
+
+		* @param x x-Position
+		* @param y y-Position
+		* @param width Breite in Zellen
+		* @param height Hšhe in Zellen
+		* @param weightx Gewicht
+		* @param weighty Gewicht
+		* @param cont Container
+		* @param comp Hinzuzufugende Komponente
+		* @param insets Abstaende rund um die Komponente
+		*/
+		private static void addComponent(int x, int y,
+		int width, int height,
+		double weightx, double weighty,
+		Container cont, Component comp,
+		Insets insets) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x; gbc.gridy = y;
+		gbc.gridwidth = width; gbc.gridheight = height;
+		gbc.weightx = weightx; gbc.weighty = weighty;
+		gbc.insets= insets;
+		cont.add(comp, gbc);
 		}
 	}

@@ -1,5 +1,6 @@
 package IRCMain;
 
+import IRCGui.GetClientIP;
 import IRCGui.IRCGuiMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 
@@ -13,8 +14,6 @@ public class IrcClientMain {
 	{
 		
 		// This is the way, how to implement the Gui and the IRCConnection!!!
-		
-		
 		
 		// Create the IRCConnection and start operation
 		//IrcServerInterface ircConnection = new IRCConnectionMain();
