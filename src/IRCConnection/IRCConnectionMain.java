@@ -311,7 +311,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	public void openVideoConnection(String username, int port) {
 		// TODO Auto-generated method stub
 		String ip = GetClientIP.getAdress();
-    	String message = "DVC REQ" + GetClientIP.getAdresAsInt() + " " + port;
+    	String message = "DVC REQ " + GetClientIP.getAdresAsInt() + " " + port;
     	videoRequstMap.put(username, true);
     	
     	this.sendCommandMessage(username, message);
