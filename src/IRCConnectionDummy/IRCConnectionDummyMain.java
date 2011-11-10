@@ -129,7 +129,13 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 	}
 
 	@Override
-	public void sendPrivateMessage(String username, String message) {
+	public void sendCommandMessage(String username, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openVideoConnection(String username, int port) {
 		// TODO Auto-generated method stub
 		
 	}

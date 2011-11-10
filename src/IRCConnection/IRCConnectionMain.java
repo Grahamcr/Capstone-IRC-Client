@@ -1,7 +1,9 @@
 package IRCConnection;
 
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import IRCGui.GetClientIP;
 import ServerGuiCommunicationInterface.IrcChannel;
 import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
@@ -30,7 +32,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	IrcChannelList chanList = new IrcChannelList();
 	String serverName = "";
 	UserList globalUserList = new UserList();
-	
+	private HashMap<String, Boolean> videoRequstMap = new HashMap<String, Boolean>();
 	
 	
 	@Override
@@ -68,6 +70,39 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   String text = line.substring(line.indexOf(chan));
 		    	   text = text.substring(text.indexOf(':') + 1);		    	   
 		    	 
+		    	   StringTokenizer tok = new StringTokenizer(text, " ");
+	    		   
+		    	   
+		    	   if(tok.nextToken().equals("DVC") ) // it is a video connection, if the next parameters are ok!
+		    	   {
+		    		   try
+		    		   {
+			    		   String action = tok.nextToken();
+			    		   int ip = Integer.parseInt(tok.nextToken());
+		    			   int port = Integer.parseInt(tok.nextToken());
+		    			   System.out.println(ip + " " + port);
+			    		   
+			    		   //if(action.equals("REQ"))
+			    		   {
+			    			   videoRequstMap.put(user, true);
+			    		   }
+			    		   //else
+			    		   {
+			    			   if(videoRequstMap.containsKey(user) && videoRequstMap.get(user) == true)
+			    			   {
+			    				   videoRequstMap.remove(user); // prevent that user opens again without request.
+			    				   guiConnection.openVideoConnection(user, GetClientIP.intToIpAdress(ip), port);
+			    			   }
+			    			   
+			    		   }
+		    		   }
+		    		   catch(Exception e)
+		    		   {
+		    			   
+		    		   }
+		    		   
+		    	   }
+		    	   
 		    	   guiConnection.writeString(user, text);
 	    	   }
 	       }
@@ -204,15 +239,15 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	}
 
 	@Override
-	public void sendPrivateMessage(String username, String message) {
-		//tcp.sendMessage()
+	public void sendCommandMessage(String username, String message) {
+		sendText("PRIVMSG " + username + " :" + message);
 		
 	}
 	
 	public void userQuitsChannel(String user)
 	{
 		chanList.removeUserFromChannels(user);
- 	   guiConnection.updateChannel(); 
+ 	    guiConnection.updateChannel(); 
 	}
 	
 	public void userJoinsChannel(String user, StringTokenizer st)
@@ -270,6 +305,16 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
  	   String channel = st.nextToken();
  	   IrcChannel chan = chanList.getIrcChannel(channel);
  	   guiConnection.openChannel(chan, false);
+	}
+
+	@Override
+	public void openVideoConnection(String username, int port) {
+		// TODO Auto-generated method stub
+		String ip = GetClientIP.getAdress();
+    	String message = "DVC REQ" + GetClientIP.getAdresAsInt() + " " + port;
+    	videoRequstMap.put(username, true);
+    	
+    	this.sendCommandMessage(username, message);
 	}
 	
 }

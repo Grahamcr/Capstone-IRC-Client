@@ -1,9 +1,6 @@
 package de.fhh.CapstoneIRC.Video;
 
-import java.io.IOException;
-
 import javax.media.Manager;
-import javax.media.NoDataSourceException;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.SourceCloneable;
 
@@ -14,15 +11,17 @@ public class VideoConnection
 	private		VideoPlayer			m_vplayer;
 	private		RTPConnection		m_rtpConn;
 	private		String				m_remoteIP;
-	private		int					m_rtpPort;
+	private		int					m_localRtpPort;
+	private		int					m_remoteRtpPort;
 	private		DataSource			m_dataSource;
 	private		DataSource			m_dataSourceClone;
 	
-	public VideoConnection(VideoChatWindow parent, String IP, int Port)
+	public VideoConnection(VideoChatWindow parent, String IP, int LocalPort, int RemotePort)
 	{
 		m_parent = parent;
 		m_remoteIP = IP;
-		m_rtpPort = Port;
+		m_localRtpPort = LocalPort;
+		m_remoteRtpPort = RemotePort;
 		m_vsource = new VideoSource_Webcam_JMF();
 		m_vsource.initializeSource();
 	}
@@ -63,7 +62,7 @@ public class VideoConnection
 		m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
 		m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
 		m_vplayer.start();
-		m_rtpConn = new RTPConnection(this, m_dataSource, m_remoteIP, m_rtpPort);
+		m_rtpConn = new RTPConnection(this, m_dataSource, m_remoteIP, m_localRtpPort, m_remoteRtpPort);
 		m_rtpConn.start();
 	}
 	

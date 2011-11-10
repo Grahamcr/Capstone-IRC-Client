@@ -13,4 +13,6 @@ public interface IrcGuiInterface extends Runnable {
 	public void openChannel(IrcChannel channel, boolean privChat);
 	public void closeChannel(String channel);
 	public void updateChannel();
+	
+	public void openVideoConnection(String username, String ip, int port);
 }

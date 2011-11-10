@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,20 +22,25 @@ public class VideoChatWindow extends JFrame
 	private		VideoPlayer			m_player2 = null;
 	private		VideoTestPlayerGUI	m_parent;
 	
-	public VideoChatWindow(VideoTestPlayerGUI parent, String IP, int Port)
+	public VideoChatWindow(String IP, int LocalPort, int RemotePort)
 	{
-		super("Video Chat with " + IP+":"+Port);
+		this(null, IP, LocalPort, RemotePort);
+	}
+	public VideoChatWindow(VideoTestPlayerGUI parent, String IP, int LocalPort, int RemotePort)
+	{
+		super("Video Chat with " + IP+":"+RemotePort);
 		m_parent = parent;
 		final VideoChatWindow self = this;
 		addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent evt)
 			{
-				m_parent.removeFromList(self);
+				if(m_parent != null)
+					m_parent.removeFromList(self);
 				stop();
 			}
 		});
-		buildGUI(IP, Port);
+		buildGUI(IP, LocalPort, RemotePort);
 	}
 	
 	public void start()
@@ -77,7 +84,7 @@ public class VideoChatWindow extends JFrame
 		m_playerPanel2.add(m_player2.getVideoPlayer().getVisualComponent());
 	}
 
-	private void buildGUI(String IP, int Port)
+	private void buildGUI(String IP, int LocalPort, int RemotePort)
 	{
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints c1 = new GridBagConstraints();
@@ -86,9 +93,17 @@ public class VideoChatWindow extends JFrame
 		c1.gridwidth = 1;
 		c1.gridx = 0;
 		c1.gridy = 0;
-		this.add(new JLabel(IP+":"+Port), c1);
+		this.add(new JLabel(IP+":"+RemotePort), c1);
 		c1.gridx = 1;
-		this.add(new JLabel("You"), c1);
+		try
+		{
+			this.add(new JLabel("You@"+ InetAddress.getLocalHost()+":"+LocalPort), c1);
+		}
+		catch (UnknownHostException e)
+		{
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
 		c1.gridx = 0;
 		c1.gridy = 1;
 		m_playerPanel1 = new JPanel();
@@ -101,7 +116,7 @@ public class VideoChatWindow extends JFrame
 		m_playerPanel2.setMinimumSize(d);
 		m_playerPanel2.setPreferredSize(d);
 		this.add(m_playerPanel2, c1);
-		m_videoConnection = new VideoConnection(this, IP, Port);
+		m_videoConnection = new VideoConnection(this, IP, LocalPort, RemotePort);
 		this.pack();
 		this.setVisible(true);
 	}	
