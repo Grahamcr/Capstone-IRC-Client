@@ -23,6 +23,8 @@ public class VideoConnection
 		m_remoteIP = IP;
 		m_localRtpPort = LocalPort;
 		m_remoteRtpPort = RemotePort;
+		m_dataSource = null;
+		m_dataSourceClone = null;
 		m_vsource = new VideoSource_Webcam_JMF();
 		fWebcam = m_vsource.initializeSource();
 	}
