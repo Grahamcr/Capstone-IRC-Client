@@ -1,7 +1,6 @@
 package Audio.Receiver;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.sound.sampled.AudioFormat;
@@ -13,20 +12,13 @@ import org.xiph.speex.spi.SpeexEncoding;
 public class ClientReceiver {
 	private VoicePlayer player;
 	private VoiceDecoder decoder;
-	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private Thread receiver;
 	private AudioInputStream in;
 	
-	public ClientReceiver() {
-		try {
-			serverSocket = new ServerSocket(51234);
-			clientSocket = serverSocket.accept();
-			startReceiver();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public ClientReceiver(Socket client) {
+		clientSocket = client;
+		startReceiver();
 	}
 	
 	public void start() {
@@ -65,4 +57,5 @@ public class ClientReceiver {
 			e.printStackTrace();
 		}
 	}
+
 }

@@ -1,10 +1,7 @@
 package Audio.Sender;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -13,20 +10,10 @@ import org.xiph.speex.spi.SpeexEncoding;
 public class ClientSender {
 	private VoiceRecorder voiceRec;
 	private VoiceEncoder voiceEnc;
-	private ArrayList<String> connections = new ArrayList<String>();
 	private Socket socket;
 	
-	public ClientSender() {
-		 try {
-			socket = new Socket(InetAddress.getByName("127.0.0.1"), 51234);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public void addConnection(String ip) throws SocketException {
-		connections.add(ip);
+	public ClientSender(Socket socket) {
+		this.socket = socket;
 	}
 	
 	private void send(byte[] data) throws IOException {
