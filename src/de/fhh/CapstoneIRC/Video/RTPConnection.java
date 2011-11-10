@@ -148,6 +148,7 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 			e.printStackTrace();
 			return;
 		}
+		System.out.println("RTP Manager started!");
 	}
 
 	@Override
