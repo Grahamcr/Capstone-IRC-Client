@@ -7,7 +7,7 @@ import javax.media.protocol.DataSource;
 
 public interface VideoSource
 {
-	void initializeSource();
+	boolean initializeSource();
 	boolean openSource() throws NoDataSourceException, IOException;
 	void closeSource();
 	DataSource getDataSource();

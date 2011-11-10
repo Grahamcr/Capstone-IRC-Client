@@ -6,6 +6,7 @@ import javax.media.protocol.SourceCloneable;
 
 public class VideoConnection
 {
+	public		boolean				fWebcam;
 	public		VideoChatWindow		m_parent;
 	private		VideoSource			m_vsource;
 	private		VideoPlayer			m_vplayer;
@@ -23,7 +24,7 @@ public class VideoConnection
 		m_localRtpPort = LocalPort;
 		m_remoteRtpPort = RemotePort;
 		m_vsource = new VideoSource_Webcam_JMF();
-		m_vsource.initializeSource();
+		fWebcam = m_vsource.initializeSource();
 	}
 	
 	public void start()
@@ -31,37 +32,40 @@ public class VideoConnection
 		System.out.println("VideoConnection->start()");
 		/* NOTEBOOK WORKAROUND */
 		// try to open the webcam for 5 times;
-		int tries = 0;
-		boolean successfull = false;
-		do
+		if(fWebcam)
 		{
-			try
+			int tries = 0;
+			boolean successfull = false;
+			do
 			{
-				++tries;
-				if(m_vsource.openSource())
-					successfull = true;
-			} //catch (NoDataSourceException | IOException e)
-			 catch (Exception e)
-			{
-				if(tries >= 5)
+				try
 				{
-					System.err.println(e.getLocalizedMessage());
-					e.printStackTrace();
+					++tries;
+					if(m_vsource.openSource())
+						successfull = true;
+				} //catch (NoDataSourceException | IOException e)
+				 catch (Exception e)
+				{
+					if(tries >= 5)
+					{
+						System.err.println(e.getLocalizedMessage());
+						e.printStackTrace();
+					}
 				}
+			}while(!successfull && tries < 5);
+			if(!successfull)
+			{
+				System.err.println("Could not open the Webcam Device!");
+				return;
 			}
-		}while(!successfull && tries < 5);
-		if(!successfull)
-		{
-			System.err.println("Could not open the Webcam Device!");
-			return;
+			if(tries > 1)
+				System.out.println("Needed " + tries + " tries to open the Webcam Device!");
+			m_dataSource = m_vsource.getDataSource();
+			m_dataSource = Manager.createCloneableDataSource(m_dataSource);
+			m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
+			m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
+			m_vplayer.start();
 		}
-		if(tries > 1)
-			System.out.println("Needed " + tries + " tries to open the Webcam Device!");
-		m_dataSource = m_vsource.getDataSource();
-		m_dataSource = Manager.createCloneableDataSource(m_dataSource);
-		m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
-		m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
-		m_vplayer.start();
 		m_rtpConn = new RTPConnection(this, m_dataSource, m_remoteIP, m_localRtpPort, m_remoteRtpPort);
 		m_rtpConn.start();
 	}

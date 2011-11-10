@@ -20,19 +20,19 @@ public class VideoSource_Webcam_JMF implements VideoSource
 	DataSource data;
 
 	@Override
-	public void initializeSource()
+	public boolean initializeSource()
 	{
 		System.out.println("get list of all media devices ...");
 		deviceListVector = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 		if (deviceListVector == null)
 		{
 			System.err.println("... error: media device list vector is null");
-			System.exit(0);
+			return false;
 		}
 		if (deviceListVector.size() == 0)
 		{
 			System.err.println("... error: media device list vector size is 0");
-			System.exit(0);
+			return false;
 		}
 
 		for (int x = 0; x < deviceListVector.size(); x++)
@@ -52,6 +52,7 @@ public class VideoSource_Webcam_JMF implements VideoSource
 			}
 		}
 		System.out.println("... list completed.");
+		return true;
 	}
 
 	@Override
