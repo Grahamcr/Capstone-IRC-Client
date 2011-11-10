@@ -74,9 +74,9 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   text = text.substring(text.indexOf(':') + 1);		    	   
 		    	 
 		    	   StringTokenizer tok = new StringTokenizer(text, " ");
-	    		   
+	    		   String actionTok = tok.nextToken();
 		    	   
-		    	   if(tok.nextToken().equals("DVC") ) // it is a video connection, if the next parameters are ok!
+		    	   if(actionTok.equals("DVC") ) // it is a video connection, if the next parameters are ok!
 		    	   {
 		    		   try
 		    		   {
@@ -105,7 +105,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    		   }
 		    		   
 		    	   }
-		    	   else if(tok.nextToken().equals("DAC") ) // it is a video connection, if the next parameters are ok!
+		    	   else if(actionTok.equals("DAC") ) // it is a video connection, if the next parameters are ok!
 		    	   {
 		    		   try
 		    		   {
