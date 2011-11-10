@@ -82,11 +82,11 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    			   int port = Integer.parseInt(tok.nextToken());
 		    			   System.out.println(ip + " " + port);
 			    		   
-			    		   if(action.equals("REQ"))
+			    		   //if(action.equals("REQ"))
 			    		   {
 			    			   videoRequstMap.put(user, true);
 			    		   }
-			    		   else
+			    		   //else
 			    		   {
 			    			   if(videoRequstMap.containsKey(user) && videoRequstMap.get(user) == true)
 			    			   {
@@ -311,7 +311,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	public void openVideoConnection(String username, int port) {
 		// TODO Auto-generated method stub
 		String ip = GetClientIP.getAdress();
-    	String message = "DVC " + GetClientIP.getAdresAsInt() + " " + port;
+    	String message = "DVC REQ" + GetClientIP.getAdresAsInt() + " " + port;
     	videoRequstMap.put(username, true);
     	
     	this.sendCommandMessage(username, message);
