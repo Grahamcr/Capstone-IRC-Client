@@ -49,7 +49,8 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	private		DataSource 			m_dataSource;
 	private		VideoPlayer			m_player;
 	private		String				m_remoteIP;
-	private		int					m_rtpPort					= 0;
+	private		int					m_localRtpPort				= 0;
+	private		int					m_remoteRtpPort				= 0;
 	private		SessionAddress		m_localSenderAddress		= null;
 	private		SessionAddress		m_remoteReceiverAddress		= null;
 	private		Processor			m_processor					= null;
@@ -57,12 +58,13 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	private		SendStream			m_outStream					= null;
 	private		VideoConnection		m_videoConnection			= null;
 	
-	public RTPConnection(VideoConnection vc, DataSource ds, String IP, int Port)
+	public RTPConnection(VideoConnection vc, DataSource ds, String IP, int LocalPort, int RemotePort)
 	{
 		m_videoConnection = vc;
 		m_dataSource = ds;
 		m_remoteIP = IP;
-		m_rtpPort = Port;
+		m_localRtpPort = LocalPort;
+		m_remoteRtpPort = RemotePort;
 		try
 		{
 			m_processor = Manager.createProcessor(m_dataSource);
@@ -163,8 +165,8 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 			}
 			try
 			{
-				m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_rtpPort);
-				m_remoteReceiverAddress = new SessionAddress(receiver, m_rtpPort);
+				m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_localRtpPort);
+				m_remoteReceiverAddress = new SessionAddress(receiver, m_remoteRtpPort);
 				m_rtpManager.initialize(new SessionAddress[] { m_localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
 				m_rtpManager.addTarget(m_remoteReceiverAddress);
 				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
@@ -184,9 +186,12 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 				System.err.println(e.getLocalizedMessage());
 				e.printStackTrace();
 				return;
-			} 
-			m_processor.start();
-			System.out.println("Processor started");
+			}
+			if(m_processor != null)
+			{
+				m_processor.start();
+				System.out.println("Processor started");
+			}
 		}
 		if (event instanceof EndOfMediaEvent)
 		{
@@ -267,8 +272,10 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		}
 		else if(event instanceof ByeEvent)
 		{
-			Participant newReceiver = ((ByeEvent) event).getParticipant();
-			String cname = newReceiver.getCNAME();
+			Participant participant = ((ByeEvent) event).getParticipant();
+			String cname = "unknown";
+			if(participant != null)
+				cname = participant.getCNAME();
 			System.out.println(cname + " closed the stream: " + ((ByeEvent) event).getReason());
 			if(m_player != null)
 			{

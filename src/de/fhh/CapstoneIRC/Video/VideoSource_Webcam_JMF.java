@@ -9,23 +9,12 @@ import javax.media.CaptureDeviceManager;
 import javax.media.Format;
 import javax.media.Manager;
 import javax.media.NoDataSourceException;
-import javax.media.format.AudioFormat;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.DataSource;
 
 
 public class VideoSource_Webcam_JMF implements VideoSource
-{
-	private static String				defaultVideoDeviceName = "Microsoft WDM Image Capture (Win32)";
-	private static String				defaultAudioDeviceName = "DirectSoundCapture";
-	private static String				defaultVideoFormatString = "size=320x240, encoding=yuv, maxdatalength=153600";
-	private static String				defaultAudioFormatString = "linear, 16000.0 hz, 8-bit, mono, unsigned";
-
-	private static CaptureDeviceInfo	captureVideoDevice = null;
-	private static CaptureDeviceInfo	captureAudioDevice = null;
-	private static VideoFormat			captureVideoFormat = null;
-	private static AudioFormat			captureAudioFormat = null;
-	
+{	
 	@SuppressWarnings("rawtypes")
 	private java.util.Vector deviceListVector;
 	DataSource data;
@@ -34,7 +23,7 @@ public class VideoSource_Webcam_JMF implements VideoSource
 	public void initializeSource()
 	{
 		System.out.println("get list of all media devices ...");
-		deviceListVector = CaptureDeviceManager.getDeviceList(null);
+		deviceListVector = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 		if (deviceListVector == null)
 		{
 			System.err.println("... error: media device list vector is null");
@@ -51,48 +40,14 @@ public class VideoSource_Webcam_JMF implements VideoSource
 			// display device name
 			CaptureDeviceInfo deviceInfo = (CaptureDeviceInfo) deviceListVector.elementAt(x);
 			String deviceInfoText = deviceInfo.getName();
+			if(deviceInfoText.equals("DirectSoundCapture") || deviceInfoText.equals("JavaSound audio capture"))
+				continue;
 			System.out.println("device " + x + ": " + deviceInfoText);
 
 			// display device formats
 			Format deviceFormat[] = deviceInfo.getFormats();
 			for (int y = 0; y < deviceFormat.length; y++)
 			{
-				// serach for default video device
-				if (captureVideoDevice == null)
-					if (deviceFormat[y] instanceof VideoFormat)
-					if (deviceInfo.getName().indexOf(defaultVideoDeviceName) >= 0)
-				{
-					captureVideoDevice = deviceInfo;
-					System.out.println(">>> capture video device = " + deviceInfo.getName());
-				}
-
-				// search for default video format
-				if (captureVideoDevice == deviceInfo)
-					if (captureVideoFormat == null)
-					if (DeviceInfo.formatToString(deviceFormat[y]).indexOf(defaultVideoFormatString) >= 0)
-				{
-					captureVideoFormat = (VideoFormat) deviceFormat[y];
-					System.out.println(">>> capture video format = " + DeviceInfo.formatToString(deviceFormat[y]));
-				}
-
-				// serach for default audio device
-				if (captureAudioDevice == null)
-					if (deviceFormat[y] instanceof AudioFormat)
-					if (deviceInfo.getName().indexOf(defaultAudioDeviceName) >= 0)
-				{
-					captureAudioDevice = deviceInfo;
-					System.out.println(">>> capture audio device = " + deviceInfo.getName());
-				}
-
-				// search for default audio format
-				if (captureAudioDevice == deviceInfo)
-					if (captureAudioFormat == null)
-					if (DeviceInfo.formatToString(deviceFormat[y]).indexOf(defaultAudioFormatString) >= 0)
-				{
-					captureAudioFormat = (AudioFormat) deviceFormat[y];
-					System.out.println(">>> capture audio format = " + DeviceInfo.formatToString(deviceFormat[y]));
-				}
-
 				System.out.println(" - format: " +  DeviceInfo.formatToString(deviceFormat[y]));
 			}
 		}
@@ -105,7 +60,7 @@ public class VideoSource_Webcam_JMF implements VideoSource
 		// if we got a camera, use the first available
 		if(deviceListVector.size() != 0) 
 		{
-			CaptureDeviceInfo infoCaptureDevice = (CaptureDeviceInfo) deviceListVector.elementAt (2);
+			CaptureDeviceInfo infoCaptureDevice = (CaptureDeviceInfo) deviceListVector.elementAt (0);
 			System.out.println("CaptureDeviceInfo: ");
 			System.out.println(infoCaptureDevice.getName());
 			System.out.println(infoCaptureDevice.getLocator());
