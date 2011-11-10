@@ -185,7 +185,7 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 				DataSource dataOutput = m_processor.getDataOutput();
 				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
 				m_outStream.start();
-			} catch(UnsupportedFormatException | IOException e)
+			} catch(Exception e)
 			{
 				System.err.println(e.getLocalizedMessage());
 				e.printStackTrace();
