@@ -480,9 +480,14 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
 		AudioConnection audioConn = new AudioConnection();
 		@Override
-		public void openAudioConnection(String username, String ip, int port) {
+		public void openAudioConnection(String username, final String ip, final int port) {
 			// TODO Auto-generated method stub
-			audioConn.startAudioConnection(ip, port);
+			
+			new Thread( new Runnable() {
+  			  public void run() {
+  				audioConn.startAudioConnection(ip, port);
+  			  };
+  			} ).start();	
 			
 		}
 	}

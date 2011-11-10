@@ -339,7 +339,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 
 	
 	@Override
-	public void openAudioConnection(String username, int port) {
+	public void openAudioConnection(final String username, final int port) {
 		// TODO Auto-generated method stub
 		String ip = GetClientIP.getAdress();
     	String message = "DAC " + GetClientIP.getAdresAsInt() + " " + port;
@@ -350,10 +350,14 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     	}
     	else
     	{
-    		AudioConnection audio = new AudioConnection();
-    		audio.waitForAudioConnection(port);
-        	audio.setConnectionOpened(true);
-        	audioConnMap.put(username, audio);
+    		new Thread( new Runnable() {
+    			  public void run() {
+    				  AudioConnection audio = new AudioConnection();
+    				  audio.waitForAudioConnection(port);
+    				  audio.setConnectionOpened(true);
+    				  audioConnMap.put(username, audio);
+    			  };
+    			} ).start();	
     	}
     	
     	this.sendCommandMessage(username, message);
