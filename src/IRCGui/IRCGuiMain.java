@@ -6,24 +6,32 @@ Errors I've found (donleyj):
 
 package IRCGui;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JTextArea;
-import javax.swing.JOptionPane;
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
@@ -75,6 +83,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
 		public IRCGuiMain() 
 		{
+			//Toolkit.getDefaultToolkit().getSystemEventQueue().push(new ContextMenue()); 
 			this.getContentPane().setLayout(null);
 			this.initWindow();
 			this.addWindowListener(new WindowListener() {
@@ -125,6 +134,40 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 				}
 
 			});
+			
+			
+			userList.addMouseListener( new MouseAdapter()
+			{
+				public void mousePressed(MouseEvent e)
+				{
+					if ( SwingUtilities.isRightMouseButton(e) )
+					{	
+						int index = userList.locationToIndex(e.getPoint());
+				        userList.setSelectedIndex(index);
+						
+						
+						final JPopupMenu menu = new JPopupMenu(); 
+						menu.add(new ContextWhoisAction(userList, ircServer)); 
+						menu.add(new ContextVideoAction(userList, ircServer)); 
+						//menu.addSeparator(); 
+					 
+	 
+						Point pt = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), userList);
+						menu.show(userList, pt.x, pt.y);
+					}
+				}
+	 
+				public void mouseReleased(MouseEvent e)
+				{
+					if ( SwingUtilities.isRightMouseButton(e) )
+					{
+						JList list = (JList)e.getSource();
+						System.out.println(list.getSelectedValue() + " selected");
+					}
+				}
+			});
+	 
+			//getContentPane().add( new JScrollPane(userList) );
 			
 			
 			openConnectionButton.addActionListener(new ActionListener() {
@@ -311,6 +354,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		public void openConnection()
 		{
 			IrcServerInterface ircConnection;
+			//ircConnection = new IRCConnectionDummyMain();
 			ircConnection = new IRCConnectionMain();
 			Thread t = new Thread(ircConnection);
 			t.start();
@@ -391,5 +435,37 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		public void addUserInfoInterface(UserInfoInterface info) {
 			userInfo = info;
 			
+		}
+
+		@Override
+		public void openVideoConnection(String username, String ip, int port) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		/**
+
+		* @param x x-Position
+		* @param y y-Position
+		* @param width Breite in Zellen
+		* @param height Hšhe in Zellen
+		* @param weightx Gewicht
+		* @param weighty Gewicht
+		* @param cont Container
+		* @param comp Hinzuzufugende Komponente
+		* @param insets Abstaende rund um die Komponente
+		*/
+		private static void addComponent(int x, int y,
+		int width, int height,
+		double weightx, double weighty,
+		Container cont, Component comp,
+		Insets insets) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x; gbc.gridy = y;
+		gbc.gridwidth = width; gbc.gridheight = height;
+		gbc.weightx = weightx; gbc.weighty = weighty;
+		gbc.insets= insets;
+		cont.add(comp, gbc);
 		}
 	}

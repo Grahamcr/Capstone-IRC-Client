@@ -17,9 +17,9 @@ public class VideoChatWindow extends JFrame
 {
 	private		VideoConnection		m_videoConnection;
 	private		JPanel				m_playerPanel1;
-	private		VideoPlayer			m_player1 = null;;
+	private		VideoPlayer			m_player1 = null;
 	private		JPanel				m_playerPanel2;
-	private		VideoPlayer			m_player2 = null;;
+	private		VideoPlayer			m_player2 = null;
 	private		VideoTestPlayerGUI	m_parent;
 	
 	public VideoChatWindow(String IP, int LocalPort, int RemotePort)
