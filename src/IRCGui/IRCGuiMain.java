@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 
 import de.fhh.CapstoneIRC.Video.VideoChatWindow;
 
+import Audio.AudioConnection;
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
 import ServerGuiCommunicationInterface.IrcChannel;
@@ -151,6 +152,9 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 						final JPopupMenu menu = new JPopupMenu(); 
 						menu.add(new ContextWhoisAction(userList, ircServer)); 
 						menu.add(new ContextVideoAction(userList, ircServer)); 
+						menu.add(new ContextAudioAction(userList, ircServer)); 
+						
+						
 						//menu.addSeparator(); 
 					 
 	 
@@ -463,13 +467,22 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		int width, int height,
 		double weightx, double weighty,
 		Container cont, Component comp,
-		Insets insets) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.gridx = x; gbc.gridy = y;
-		gbc.gridwidth = width; gbc.gridheight = height;
-		gbc.weightx = weightx; gbc.weighty = weighty;
-		gbc.insets= insets;
-		cont.add(comp, gbc);
+		Insets insets) 
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = x; gbc.gridy = y;
+			gbc.gridwidth = width; gbc.gridheight = height;
+			gbc.weightx = weightx; gbc.weighty = weighty;
+			gbc.insets= insets;
+			cont.add(comp, gbc);
+		}
+
+		AudioConnection audioConn = new AudioConnection();
+		@Override
+		public void openAudioConnection(String username, String ip, int port) {
+			// TODO Auto-generated method stub
+			audioConn.startAudioConnection(ip, port);
+			
 		}
 	}

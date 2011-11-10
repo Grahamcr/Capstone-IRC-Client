@@ -11,6 +11,16 @@ import Audio.Sender.ClientSender;
 
 public class AudioConnection {
 
+	Boolean connectionOpened = false;
+	
+	public Boolean getConnectionOpened() {
+		return connectionOpened;
+	}
+
+	public void setConnectionOpened(Boolean connectionOpened) {
+		this.connectionOpened = connectionOpened;
+	}
+
 	public void startAudioConnection(String ip, int port) {
 		startAudioConnection(ip, port, "");
 	}
