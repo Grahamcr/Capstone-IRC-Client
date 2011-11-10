@@ -33,6 +33,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import de.fhh.CapstoneIRC.Video.VideoChatWindow;
+
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
 import ServerGuiCommunicationInterface.IrcChannel;
@@ -441,6 +443,8 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		public void openVideoConnection(String username, String ip, int port) {
 			// TODO Auto-generated method stub
 			
+			VideoChatWindow videoWin = new VideoChatWindow(ip, port, port);
+			videoWin.start();
 		}
 		
 		/**
