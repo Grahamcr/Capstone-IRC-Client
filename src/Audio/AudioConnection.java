@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import Audio.Receiver.ClientReceiver;
 import Audio.Sender.ClientSender;
 
-public class AudioConnection {
+public class AudioConnection{
 
 	Boolean connectionOpened = false;
 	
