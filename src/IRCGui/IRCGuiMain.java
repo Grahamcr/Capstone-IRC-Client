@@ -6,24 +6,28 @@ Errors I've found (donleyj):
 
 package IRCGui;
 
+import java.awt.Point;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JTextArea;
-import javax.swing.JOptionPane;
-import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
@@ -75,6 +79,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
 		public IRCGuiMain() 
 		{
+			//Toolkit.getDefaultToolkit().getSystemEventQueue().push(new ContextMenue()); 
 			this.getContentPane().setLayout(null);
 			this.initWindow();
 			this.addWindowListener(new WindowListener() {
@@ -125,6 +130,40 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 				}
 
 			});
+			
+			
+			userList.addMouseListener( new MouseAdapter()
+			{
+				public void mousePressed(MouseEvent e)
+				{
+					if ( SwingUtilities.isRightMouseButton(e) )
+					{	
+						int index = userList.locationToIndex(e.getPoint());
+				        userList.setSelectedIndex(index);
+						
+						
+						final JPopupMenu menu = new JPopupMenu(); 
+						menu.add(new ContextWhoisAction(userList, ircServer)); 
+						menu.add(new ContextVideoAction(userList, ircServer)); 
+						//menu.addSeparator(); 
+					 
+	 
+						Point pt = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), userList);
+						menu.show(userList, pt.x, pt.y);
+					}
+				}
+	 
+				public void mouseReleased(MouseEvent e)
+				{
+					if ( SwingUtilities.isRightMouseButton(e) )
+					{
+						JList list = (JList)e.getSource();
+						System.out.println(list.getSelectedValue() + " selected");
+					}
+				}
+			});
+	 
+			//getContentPane().add( new JScrollPane(userList) );
 			
 			
 			openConnectionButton.addActionListener(new ActionListener() {
@@ -311,6 +350,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		public void openConnection()
 		{
 			IrcServerInterface ircConnection;
+			//ircConnection = new IRCConnectionDummyMain();
 			ircConnection = new IRCConnectionMain();
 			Thread t = new Thread(ircConnection);
 			t.start();
