@@ -1,4 +1,9 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Main testing GUI for the Video Chat.
+ * Prototype only!!!
+ */
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

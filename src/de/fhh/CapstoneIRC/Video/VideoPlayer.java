@@ -1,4 +1,8 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Class that contains the video player logic
+ */
 
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;

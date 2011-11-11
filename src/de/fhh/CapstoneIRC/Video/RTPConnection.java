@@ -1,4 +1,9 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Class for handling RTP Connections.
+ * Sends a stream from own webcam and receives incoming streams
+ */
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,7 +19,6 @@ import javax.media.Player;
 import javax.media.Processor;
 import javax.media.RealizeCompleteEvent;
 import javax.media.control.TrackControl;
-import javax.media.format.UnsupportedFormatException;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
@@ -67,14 +71,16 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		m_remoteRtpPort = RemotePort;
 		m_processor = null;
 		if(m_dataSource != null)
-		try
 		{
-			m_processor = Manager.createProcessor(m_dataSource);
-			m_processor.addControllerListener(this);
-		} catch (Exception e)
-		{
-			System.err.println(e.getLocalizedMessage());
-			e.printStackTrace();
+			try
+			{
+				m_processor = Manager.createProcessor(m_dataSource);
+				m_processor.addControllerListener(this);
+			} catch (Exception e)
+			{
+				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 

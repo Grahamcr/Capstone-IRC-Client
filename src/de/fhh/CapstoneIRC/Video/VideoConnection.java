@@ -1,5 +1,8 @@
 package de.fhh.CapstoneIRC.Video;
-
+/**
+ * @author Julian Junghans
+ * This Class initializes and handles the Webcam and the RTP connection
+ */
 import javax.media.Manager;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.SourceCloneable;
@@ -58,15 +61,19 @@ public class VideoConnection
 			if(!successfull)
 			{
 				System.err.println("Could not open the Webcam Device!");
-				return;
+				System.out.println("Continue without Webcam...");
+				fWebcam = false;
 			}
-			if(tries > 1)
-				System.out.println("Needed " + tries + " tries to open the Webcam Device!");
-			m_dataSource = m_vsource.getDataSource();
-			m_dataSource = Manager.createCloneableDataSource(m_dataSource);
-			m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
-			m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
-			m_vplayer.start();
+			else
+			{
+				if(tries > 1)
+					System.out.println("Needed " + tries + " tries to open the Webcam Device!");
+				m_dataSource = m_vsource.getDataSource();
+				m_dataSource = Manager.createCloneableDataSource(m_dataSource);
+				m_dataSourceClone = ((SourceCloneable)m_dataSource).createClone();
+				m_vplayer = new VideoPlayer(m_parent, m_dataSourceClone, false);
+				m_vplayer.start();
+			}
 		}
 		m_rtpConn = new RTPConnection(this, m_dataSource, m_remoteIP, m_localRtpPort, m_remoteRtpPort);
 		m_rtpConn.start();
