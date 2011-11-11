@@ -76,8 +76,7 @@ public class VideoPlayer implements ControllerListener
 	{
 		if(c instanceof RealizeCompleteEvent)
 		{
-			if(getVideoPlayer() != null)
-			if(getVideoPlayer().getVisualComponent() != null)
+			if(getVideoPlayer() != null && getVideoPlayer().getVisualComponent() != null)
 			{
 				if(m_rtp)
 					m_vcw.setPlayer1(this);

@@ -3,6 +3,7 @@ package de.fhh.CapstoneIRC.Video;
  * @author Julian Junghans
  * This Class opens up a window with 2 video players
  */
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -62,13 +63,19 @@ public class VideoChatWindow extends JFrame
 		if(newPlayer == null)
 		{
 			m_playerPanel1.removeAll();
+			System.err.println("newPlayer == null");
 			return;
 		}
 		if(m_player1 == newPlayer)
+		{
 			return;
+		}
 		if(m_player1 != null)
 			m_playerPanel1.removeAll();
 		m_player1 = newPlayer;
+		Component comp = m_player1.getVideoPlayer().getVisualComponent();
+		if(comp == null)
+			System.err.println("m_player1.getVideoPlayer().getVisualComponent() == null");
 		m_playerPanel1.add(m_player1.getVideoPlayer().getVisualComponent());
 	}
 	
