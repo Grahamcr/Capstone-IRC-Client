@@ -1,5 +1,8 @@
 package de.fhh.CapstoneIRC.Video;
-
+/**
+ * @author Julian Junghans
+ * This Class opens up a window with 2 video players
+ */
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

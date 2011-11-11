@@ -105,7 +105,8 @@ public class NbEncoder
   private Vbr    vbr;            /** State of the VBR data */
   private int    dtx_count;      /** Number of consecutive DTX frames */
 
-  private float[]  innov2;
+  @SuppressWarnings("unused")
+private float[]  innov2;
 
   protected int complexity;     /** Complexity setting (0-10 from least complex to most complex) */
   protected int vbr_enabled;    /** 1 for enabling VBR, 0 otherwise */
@@ -775,7 +776,8 @@ public class NbEncoder
 
     {
       float ener=0, err=0;
-      float snr;
+      @SuppressWarnings("unused")
+	float snr;
       for (i=0;i<frameSize;i++)
       {
         ener+=frmBuf[frmIdx+i]*frmBuf[frmIdx+i];
