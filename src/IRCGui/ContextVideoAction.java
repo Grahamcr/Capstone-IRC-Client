@@ -28,7 +28,7 @@ class ContextVideoAction extends AbstractAction{
     	int port = 6668;
     	String user = comp.getSelectedValue().toString();
     	
-        conn.openVideoConnection(user, port);
+        conn.openVideoConnection(user, port, true);
     } 
  
     public boolean isEnabled()

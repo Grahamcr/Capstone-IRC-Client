@@ -181,7 +181,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 				public void actionPerformed(ActionEvent arg0) {
 					String tempPort = new String("");
 					ipAddr = JOptionPane.showInputDialog(
-						"Enter the server name or IP", "10.57.139.242");
+						"Enter the server name or IP", "35.40.197.57");
 					if (ipAddr == null) {
 						return;
 					}
@@ -450,10 +450,25 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		}
 
 		@Override
-		public void openVideoConnection(String username, String ip, int port) {
+		public void openVideoConnection(String username, String ip, int port, Boolean startGui) {
 			// TODO Auto-generated method stub
 			
-			VideoChatWindow videoWin = new VideoChatWindow(ip, port, port);
+			
+			if( startGui == false)
+			{
+				 int response = JOptionPane.showConfirmDialog(null, username + " requests a video connection", "Do you want to start a video session with " + username +"?",
+					        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					    if (response == JOptionPane.YES_OPTION) 
+					    {
+					        ircServer.openVideoConnection(username, port, false);
+					    }
+					    else
+					    {
+					    	return;
+					    }
+			}
+			
+	    	VideoChatWindow videoWin = new VideoChatWindow(ip, port, port);
 			videoWin.start();
 		}
 		
@@ -488,6 +503,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 		@Override
 		public void openAudioConnection(String username, final String ip, final int port) {
 			// TODO Auto-generated method stub
+			
 			
 			new Thread( new Runnable() {
   			  public void run() {
