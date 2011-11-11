@@ -124,8 +124,10 @@ public class Vbr
   private float average_energy;
   private float last_energy;
   private float[] last_log_energy;
-  private float accum_sum;
-  private float last_pitch_coef;
+  @SuppressWarnings("unused")
+private float accum_sum;
+  @SuppressWarnings("unused")
+private float last_pitch_coef;
   private float soft_pitch;
   private float last_quality;
   private float noise_level;
@@ -186,7 +188,8 @@ public class Vbr
     int i;
     float ener=0, ener1=0, ener2=0;
     float qual=7;
-    int va;
+    @SuppressWarnings("unused")
+	int va;
     float log_energy;
     float non_st=0;
     float voicing;

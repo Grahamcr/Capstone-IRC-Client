@@ -265,7 +265,8 @@ public class Ltp3Tap
    * @param cdbk_index
    * @return the best quantized 3-tap pitch predictor by analysis by synthesis.
    */
-  private float pitch_gain_search_3tap(final float[] target,
+  @SuppressWarnings("unused")
+private float pitch_gain_search_3tap(final float[] target,
                                        final float[] ak,
                                        final float[] awk1,
                                        final float[] awk2,

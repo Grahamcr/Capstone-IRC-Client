@@ -68,7 +68,8 @@ public class OggSpeexWriter
   /** Defines whether or not to use VBR (Variable Bit Rate). */
   private boolean vbr;
   /** */
-  private int     size;
+  @SuppressWarnings("unused")
+private int     size;
   /** Ogg Stream Serial Number */
   private int     streamSerialNumber;
   /** Data buffer */
