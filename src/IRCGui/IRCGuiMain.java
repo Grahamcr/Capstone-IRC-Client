@@ -20,6 +20,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -33,8 +35,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import de.fhh.CapstoneIRC.Video.VideoChatWindow;
-
 import Audio.AudioConnection;
 import IRCConnection.IRCConnectionMain;
 import ServerGuiCommunicationInterface.ChannelUser;
@@ -43,6 +43,7 @@ import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
 import ServerGuiCommunicationInterface.TextStyle;
 import ServerGuiCommunicationInterface.UserInfoInterface;
+import de.fhh.CapstoneIRC.Video.VideoChatWindow;
 
 public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
@@ -180,12 +181,12 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 				public void actionPerformed(ActionEvent arg0) {
 					String tempPort = new String("");
 					ipAddr = JOptionPane.showInputDialog(
-						"Enter the server name or IP");
+						"Enter the server name or IP", "10.57.139.242");
 					if (ipAddr == null) {
 						return;
 					}
 					tempPort = JOptionPane.showInputDialog(
-						"Enter the port number");
+						"Enter the port number", "6667");
 					if (tempPort == null) {
 						return;
 					}
@@ -198,8 +199,13 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 							JOptionPane.ERROR_MESSAGE);
 						return;
 					}
-					userName = JOptionPane.showInputDialog(
-						"Enter your user name");
+					try {
+						userName = JOptionPane.showInputDialog(
+							"Enter your user name", InetAddress.getLocalHost().getHostName().substring(0, 7));
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					if (userName == null) {
 						return;
 					}
