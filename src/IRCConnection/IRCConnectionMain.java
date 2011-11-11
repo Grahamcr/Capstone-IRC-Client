@@ -131,6 +131,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			{
 				serverName = firstToken.substring(1);
 				guiConnection.writeString(serverName, "connection established");
+				
+				this.sendText("join #test");
 			}
 		   else if(firstToken.equals("PING"))
 	       {
