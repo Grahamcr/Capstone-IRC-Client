@@ -27,6 +27,8 @@ public class VideoPlayer implements ControllerListener
 		m_vcw = vcw;
 		m_data = ds;
 		m_rtp = rtp;
+		if(m_data == null)
+			System.err.println("(RTP-Player) m_data == null !!!");
 		try
 		{
 			m_player = Manager.createPlayer(m_data);
@@ -78,6 +80,7 @@ public class VideoPlayer implements ControllerListener
 		{
 			if(getVideoPlayer() != null && getVideoPlayer().getVisualComponent() != null)
 			{
+				System.out.println("Player realized!");
 				if(m_rtp)
 					m_vcw.setPlayer1(this);
 				else

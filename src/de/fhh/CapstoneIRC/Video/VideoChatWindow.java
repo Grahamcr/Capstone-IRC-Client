@@ -76,6 +76,8 @@ public class VideoChatWindow extends JFrame
 		Component comp = m_player1.getVideoPlayer().getVisualComponent();
 		if(comp == null)
 			System.err.println("m_player1.getVideoPlayer().getVisualComponent() == null");
+		else
+			System.out.println("Player Visual Component added to Window...!");
 		m_playerPanel1.add(m_player1.getVideoPlayer().getVisualComponent());
 	}
 	
