@@ -63,6 +63,7 @@ import org.xiph.speex.spi.SpeexEncoding;
  * @author Marc Gimpel, Wimba S.A. (mgimpel@horizonwimba.com)
  * @version $Revision: 1.2 $
  */
+@SuppressWarnings("serial")
 public class Recorder
   extends Player
 {

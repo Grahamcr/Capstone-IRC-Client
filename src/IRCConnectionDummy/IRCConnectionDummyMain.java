@@ -135,7 +135,7 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 	}
 
 	@Override
-	public void openVideoConnection(String username, int port) {
+	public void openVideoConnection(String username, int port, Boolean dummy) {
 		// TODO Auto-generated method stub
 		
 	}

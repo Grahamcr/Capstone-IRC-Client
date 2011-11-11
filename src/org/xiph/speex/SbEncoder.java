@@ -278,7 +278,8 @@ public class SbEncoder
     for (i=0; i<lpcSize; i++)
       lsp[i] = (float) Math.acos(lsp[i]);
 
-    float lsp_dist=0;
+    @SuppressWarnings("unused")
+	float lsp_dist=0;
     for (i=0;i<lpcSize;i++)
        lsp_dist += (old_lsp[i] - lsp[i])*(old_lsp[i] - lsp[i]);
 
@@ -411,7 +412,8 @@ public class SbEncoder
       int exc, sp, sw, resp;
       int offset;
       float rl, rh, eh=0, el=0;
-      int fold;
+      @SuppressWarnings("unused")
+	int fold;
 
       offset = subframeSize*sub;
       sp=offset;

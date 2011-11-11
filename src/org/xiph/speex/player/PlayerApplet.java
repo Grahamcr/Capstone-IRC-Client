@@ -46,6 +46,7 @@ import javax.swing.SwingUtilities;
  * @author Marc Gimpel, Wimba S.A. (mgimpel@horizonwimba.com)
  * @version $Revision: 1.2 $
  */
+@SuppressWarnings("serial")
 public class PlayerApplet
   extends JApplet
 {

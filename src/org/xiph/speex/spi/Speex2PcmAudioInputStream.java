@@ -61,7 +61,8 @@ public class Speex2PcmAudioInputStream
 
   // audio parameters
   /** The sample rate of the audio, in samples per seconds (Hz). */
-  private int     sampleRate;
+  @SuppressWarnings("unused")
+private int     sampleRate;
   /** The number of audio channels (1=mono, 2=stereo). */
   private int     channelCount;
 

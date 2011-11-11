@@ -1,5 +1,8 @@
 package de.fhh.CapstoneIRC.Video;
-
+/**
+ * @author Julian Junghans
+ * Interface for Video Sources
+ */
 import java.io.IOException;
 
 import javax.media.NoDataSourceException;
