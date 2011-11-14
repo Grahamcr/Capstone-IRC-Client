@@ -169,7 +169,8 @@ public class TFTP
                 i++;
             }
             String temp2 = new String(tmp2);
-            mode = temp2.trim();
+            //mode = temp2.trim();
+            mode = "netascii";
             System.out.println("Mode For Transfer: " + mode);
 
             sendAck((byte)0,(byte)0);
