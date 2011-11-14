@@ -81,7 +81,8 @@ public class SplitShapeSearch
   /** */
   public static final int MAX_COMPLEXITY = 10;
   
-  private int   subframesize;
+  @SuppressWarnings("unused")
+private int   subframesize;
   private int   subvect_size;
   private int   nb_subvect;
   private int[] shape_cb;

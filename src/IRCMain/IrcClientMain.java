@@ -1,6 +1,7 @@
 package IRCMain;
 
-import ICGuiDummy.IRCGuiDummyMain;
+import IRCGui.GetClientIP;
+import IRCGui.IRCGuiMain;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 
 
@@ -14,8 +15,6 @@ public class IrcClientMain {
 		
 		// This is the way, how to implement the Gui and the IRCConnection!!!
 		
-		
-		
 		// Create the IRCConnection and start operation
 		//IrcServerInterface ircConnection = new IRCConnectionMain();
 		//Thread t = new Thread(ircConnection);
@@ -25,7 +24,7 @@ public class IrcClientMain {
 		
 		
 		// Create the GUI and start operation
-		IrcGuiInterface gui = new IRCGuiDummyMain();
+		IrcGuiInterface gui = new IRCGuiMain();
 		// Add the Connection to the GUI. You can send Text with this Interface
 		//gui.addIrcServer(ircConnection);
 		// Start working

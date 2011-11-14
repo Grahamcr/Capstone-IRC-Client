@@ -2,6 +2,7 @@ package IRCConnectionDummy;
 
 import IRCConnection.UserInfo;
 import IRCConnection.UserList;
+import ServerGuiCommunicationInterface.IrcChannel;
 import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
 import ServerGuiCommunicationInterface.IrcServerInterface;
@@ -34,6 +35,13 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 		// TODO Auto-generated method stub
 		interfaceConnection = connection;
 		
+		IrcChannel chan = new IrcChannel("#test");
+		chan.addUser(new UserInfo("Holger"), "Holger");
+		chan.addUser(new UserInfo("Holger2"), "Holger2");
+		chan.addUser(new UserInfo("Holger3"), "Holger3");
+		chan.addUser(new UserInfo("Holger4"), "Holger4");
+		
+		connection.openChannel(chan, false);
 	}
 		
 	@Override
@@ -121,7 +129,19 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 	}
 
 	@Override
-	public void sendPrivateMessage(String username, String message) {
+	public void sendCommandMessage(String username, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openVideoConnection(String username, int port, Boolean dummy) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void openAudioConnection(String username, int port) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,4 +1,8 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Class that contains the video player logic
+ */
 
 import javax.media.ControllerEvent;
 import javax.media.ControllerListener;
@@ -23,6 +27,8 @@ public class VideoPlayer implements ControllerListener
 		m_vcw = vcw;
 		m_data = ds;
 		m_rtp = rtp;
+		if(m_data == null)
+			System.err.println("(RTP-Player) m_data == null !!!");
 		try
 		{
 			m_player = Manager.createPlayer(m_data);
@@ -72,9 +78,9 @@ public class VideoPlayer implements ControllerListener
 	{
 		if(c instanceof RealizeCompleteEvent)
 		{
-			if(getVideoPlayer() != null)
-			if(getVideoPlayer().getVisualComponent() != null)
+			if(getVideoPlayer() != null && getVideoPlayer().getVisualComponent() != null)
 			{
+				System.out.println("Player realized!");
 				if(m_rtp)
 					m_vcw.setPlayer1(this);
 				else

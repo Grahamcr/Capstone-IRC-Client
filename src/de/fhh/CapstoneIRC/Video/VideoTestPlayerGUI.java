@@ -1,4 +1,9 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Main testing GUI for the Video Chat.
+ * Prototype only!!!
+ */
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -20,7 +25,8 @@ import javax.swing.JTextField;
 public class VideoTestPlayerGUI extends JFrame implements ActionListener
 {
 	private		JTextField					m_ipBox;
-	private		JTextField					m_portBox;
+	private		JTextField					m_localPortBox;
+	private		JTextField					m_remotePortBox;
 	private		JButton						m_startVideoChatButton;
 	private		ArrayList<VideoChatWindow>	m_playerList;
 
@@ -69,7 +75,7 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 	{
 		if(ae.getActionCommand().equals("Start!"))
 		{
-			VideoChatWindow pp = new VideoChatWindow(this, m_ipBox.getText(), Integer.parseInt(m_portBox.getText()));
+			VideoChatWindow pp = new VideoChatWindow(this, m_ipBox.getText(), Integer.parseInt(m_localPortBox.getText()), Integer.parseInt(m_remotePortBox.getText()));
 			m_playerList.add(pp);
 			pp.start();
 		}		
@@ -97,20 +103,28 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 		c.gridy = 0;
 		pane.add(new JLabel("Partner IP"), c);
 		c.gridx = 1;
-		pane.add(new JLabel("RTP Port"), c);
+		pane.add(new JLabel("Local RTP Port"), c);
+		c.gridx = 2;
+		pane.add(new JLabel("Remote RTP Port"), c);
 		c.gridx = 0;
 		c.gridy = 1;
-		m_ipBox = new JTextField("224.0.0.1");
-//		m_ipBox = new JTextField("192.168.178.31");
+//		m_ipBox = new JTextField("224.0.0.1");
+		m_ipBox = new JTextField("35.40.199.216");
 		m_ipBox.setMinimumSize(d);
 		m_ipBox.setPreferredSize(d);
 		pane.add(m_ipBox, c);
 		c.gridx = 1;
-		m_portBox = new JTextField("3000");
-		m_portBox.setMinimumSize(d);
-		m_portBox.setPreferredSize(d);
-		pane.add(m_portBox, c);
-		c.gridwidth = 2;
+		m_localPortBox = new JTextField("3000");
+		m_localPortBox.setMinimumSize(d);
+		m_localPortBox.setPreferredSize(d);
+		pane.add(m_localPortBox, c);
+
+		c.gridx = 2;
+		m_remotePortBox = new JTextField("3000");
+		m_remotePortBox.setMinimumSize(d);
+		m_remotePortBox.setPreferredSize(d);
+		pane.add(m_remotePortBox, c);
+		c.gridwidth = 3;
 		c.gridx = 0;
 		c.gridy = 2;
 		m_startVideoChatButton = new JButton("Start Video Chat");

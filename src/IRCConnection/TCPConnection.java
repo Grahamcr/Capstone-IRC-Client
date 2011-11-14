@@ -114,7 +114,7 @@ public class TCPConnection implements Runnable {
 		} 
 	}
 	
-	public String getHostname()
+	public static String getHostname()
 	{
 		InetAddress addr;
 		

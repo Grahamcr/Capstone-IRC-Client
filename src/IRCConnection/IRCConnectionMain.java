@@ -1,7 +1,10 @@
 package IRCConnection;
 
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import Audio.AudioConnection;
+import IRCGui.GetClientIP;
 import ServerGuiCommunicationInterface.IrcChannel;
 import ServerGuiCommunicationInterface.IrcChannelList;
 import ServerGuiCommunicationInterface.IrcGuiInterface;
@@ -30,6 +33,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	IrcChannelList chanList = new IrcChannelList();
 	String serverName = "";
 	UserList globalUserList = new UserList();
+	private HashMap<String, Boolean> videoRequstMap = new HashMap<String, Boolean>();
+	private HashMap<String, AudioConnection> audioConnMap = new HashMap<String, AudioConnection>();
 	
 	
 	
@@ -68,6 +73,57 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   String text = line.substring(line.indexOf(chan));
 		    	   text = text.substring(text.indexOf(':') + 1);		    	   
 		    	 
+		    	   StringTokenizer tok = new StringTokenizer(text, " ");
+	    		   String actionTok = tok.nextToken();
+		    	   
+		    	   if(actionTok.equals("DVC") ) // it is a video connection, if the next parameters are ok!
+		    	   {
+		    		   try
+		    		   {
+			    		   String action = tok.nextToken();
+			    		   int ip = Integer.parseInt(tok.nextToken());
+		    			   int port = Integer.parseInt(tok.nextToken());
+		    			   System.out.println(ip + " " + port);
+			    		   
+			    		   if(action.equals("REQ"))
+			    		   {
+			    			   videoRequstMap.put(user, true);
+			    			   guiConnection.openVideoConnection(user, GetClientIP.intToIpAdress(ip), port, false);
+			    		   }
+			    		   else
+			    		   {
+			    			   if(videoRequstMap.containsKey(user) && videoRequstMap.get(user) == true)
+			    			   {
+			    				   videoRequstMap.remove(user); // prevent that user opens again without request.
+			    				   guiConnection.openVideoConnection(user, GetClientIP.intToIpAdress(ip), port, true);
+			    			   }
+			    			   
+			    		   }
+		    		   }
+		    		   catch(Exception e)
+		    		   {
+		    			   
+		    		   }
+		    		   
+		    	   }
+		    	   else if(actionTok.equals("DAC") ) // it is a video connection, if the next parameters are ok!
+		    	   {
+		    		   try
+		    		   {
+			    		   int ip = Integer.parseInt(tok.nextToken());
+		    			   int port = Integer.parseInt(tok.nextToken());
+		    			   System.out.println(ip + " " + port);
+			    		   
+		    			   guiConnection.openAudioConnection(user,GetClientIP.intToIpAdress(ip), port);
+		    			   
+		    		   }
+		    		   catch(Exception e)
+		    		   {
+		    			   
+		    		   }
+		    		   
+		    	   }
+		    	   
 		    	   guiConnection.writeString(user, text);
 	    	   }
 	       }
@@ -75,6 +131,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			{
 				serverName = firstToken.substring(1);
 				guiConnection.writeString(serverName, "connection established");
+				
+				this.sendText("join #test");
 			}
 		   else if(firstToken.equals("PING"))
 	       {
@@ -204,15 +262,15 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	}
 
 	@Override
-	public void sendPrivateMessage(String username, String message) {
-		//tcp.sendMessage()
+	public void sendCommandMessage(String username, String message) {
+		sendText("PRIVMSG " + username + " :" + message);
 		
 	}
 	
 	public void userQuitsChannel(String user)
 	{
 		chanList.removeUserFromChannels(user);
- 	   guiConnection.updateChannel(); 
+ 	    guiConnection.updateChannel(); 
 	}
 	
 	public void userJoinsChannel(String user, StringTokenizer st)
@@ -270,6 +328,50 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
  	   String channel = st.nextToken();
  	   IrcChannel chan = chanList.getIrcChannel(channel);
  	   guiConnection.openChannel(chan, false);
+	}
+
+	@Override
+	public void openVideoConnection(String username, int port, Boolean firstRequest) {
+		// TODO Auto-generated method stub
+		String ip = GetClientIP.getAdress();
+		String req = "REQ";
+		
+		if( firstRequest == false)
+		{
+			req = "RET";
+		}
+		
+    	String message = "DVC " + req + " " + GetClientIP.getAdresAsInt() + " " + port;
+    	videoRequstMap.put(username, true);
+    	
+    	this.sendCommandMessage(username, message);
+	}
+
+	
+	@Override
+	public void openAudioConnection(final String username, final int port) {
+		// TODO Auto-generated method stub
+		String ip = GetClientIP.getAdress();
+    	String message = "DAC " + GetClientIP.getAdresAsInt() + " " + port;
+    	
+    	if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
+    	{
+    		
+    	}
+    	else
+    	{
+    		new Thread( new Runnable() {
+    			  public void run() {
+    				  AudioConnection audio = new AudioConnection();
+    				  audio.waitForAudioConnection(port);
+    				  audio.setConnectionOpened(true);
+    				  audioConnMap.put(username, audio);
+    			  };
+    			} ).start();	
+    	}
+    	
+    	this.sendCommandMessage(username, message);
+    	
 	}
 	
 }

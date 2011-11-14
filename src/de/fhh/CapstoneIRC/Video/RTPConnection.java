@@ -1,4 +1,9 @@
 package de.fhh.CapstoneIRC.Video;
+/**
+ * @author Julian Junghans
+ * Class for handling RTP Connections.
+ * Sends a stream from own webcam and receives incoming streams
+ */
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,7 +19,6 @@ import javax.media.Player;
 import javax.media.Processor;
 import javax.media.RealizeCompleteEvent;
 import javax.media.control.TrackControl;
-import javax.media.format.UnsupportedFormatException;
 import javax.media.format.VideoFormat;
 import javax.media.protocol.ContentDescriptor;
 import javax.media.protocol.DataSource;
@@ -49,7 +53,8 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	private		DataSource 			m_dataSource;
 	private		VideoPlayer			m_player;
 	private		String				m_remoteIP;
-	private		int					m_rtpPort					= 0;
+	private		int					m_localRtpPort				= 0;
+	private		int					m_remoteRtpPort				= 0;
 	private		SessionAddress		m_localSenderAddress		= null;
 	private		SessionAddress		m_remoteReceiverAddress		= null;
 	private		Processor			m_processor					= null;
@@ -57,25 +62,31 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	private		SendStream			m_outStream					= null;
 	private		VideoConnection		m_videoConnection			= null;
 	
-	public RTPConnection(VideoConnection vc, DataSource ds, String IP, int Port)
+	public RTPConnection(VideoConnection vc, DataSource ds, String IP, int LocalPort, int RemotePort)
 	{
 		m_videoConnection = vc;
 		m_dataSource = ds;
 		m_remoteIP = IP;
-		m_rtpPort = Port;
-		try
+		m_localRtpPort = LocalPort;
+		m_remoteRtpPort = RemotePort;
+		m_processor = null;
+		if(m_dataSource != null)
 		{
-			m_processor = Manager.createProcessor(m_dataSource);
-			m_processor.addControllerListener(this);
-		} catch (Exception e)
-		{
-			System.err.println(e.getLocalizedMessage());
-			e.printStackTrace();
+			try
+			{
+				m_processor = Manager.createProcessor(m_dataSource);
+				m_processor.addControllerListener(this);
+			} catch (Exception e)
+			{
+				System.err.println(e.getLocalizedMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void start()
 	{
+		startUpRTPManager();
 		if(m_processor != null)
 			m_processor.configure();
 	}
@@ -102,6 +113,49 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 	{
 		return m_processor;
 	}
+	
+	private void startUpRTPManager()
+	{
+		m_rtpManager = RTPManager.newInstance();
+		m_rtpManager.addSessionListener(this);
+		m_rtpManager.addSendStreamListener(this);
+		m_rtpManager.addReceiveStreamListener(this);
+		m_rtpManager.addRemoteListener(this);
+		SourceDescription[] sdes =
+			{
+				new SourceDescription(SourceDescription.SOURCE_DESC_CNAME, SourceDescription.generateCNAME(), 1, false),
+				new SourceDescription(SourceDescription.SOURCE_DESC_EMAIL, "julian.junghans@gmail.com", 1, false),
+				new SourceDescription(SourceDescription.SOURCE_DESC_NAME, "Julian Junghans", 1, false)
+			};
+		InetAddress receiver = null;
+		try
+		{
+			receiver = InetAddress.getByName(m_remoteIP);
+		} catch (UnknownHostException e)
+		{
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+			return;
+		}
+		try
+		{
+			m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_localRtpPort);
+			m_remoteReceiverAddress = new SessionAddress(receiver, m_remoteRtpPort);
+			m_rtpManager.initialize(new SessionAddress[] { m_localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
+			m_rtpManager.addTarget(m_remoteReceiverAddress);
+		} catch (InvalidSessionAddressException e)
+		{
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+			return;
+		}catch (IOException e)
+		{
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+			return;
+		}
+		System.out.println("RTP Manager started!");
+	}
 
 	@Override
 	public void controllerUpdate(ControllerEvent event)
@@ -117,17 +171,10 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 			{
 				if (!found && (tracks[i].getFormat() instanceof VideoFormat))
 				{
-					try
-					{
 						if(null == tracks[i].setFormat(new VideoFormat(VideoFormat.JPEG_RTP)))
 							System.err.println("Unsupported VideoFormat!");
 						System.out.println("FrameRate: "+((VideoFormat)tracks[i].getFormat()).getFrameRate());
 						found = true;
-					} catch (Exception e)
-					{
-						System.err.println(e.getLocalizedMessage());
-						e.printStackTrace();
-					}
 				}
 				else
 					tracks[i].setEnabled(false);
@@ -139,52 +186,17 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		}
 		else if (event instanceof RealizeCompleteEvent)
 		{
-			DataSource dataOutput = m_processor.getDataOutput();
-			m_rtpManager = RTPManager.newInstance();
-			m_rtpManager.addSessionListener(this);
-			m_rtpManager.addSendStreamListener(this);
-			m_rtpManager.addReceiveStreamListener(this);
-			m_rtpManager.addRemoteListener(this);
-			SourceDescription[] sdes =
-				{
-					new SourceDescription(SourceDescription.SOURCE_DESC_CNAME, SourceDescription.generateCNAME(), 1, false),
-					new SourceDescription(SourceDescription.SOURCE_DESC_EMAIL, "julian.junghans@gmail.com", 1, false),
-					new SourceDescription(SourceDescription.SOURCE_DESC_NAME, "Julian Junghans", 1, false)
-				};
-			InetAddress receiver = null;
 			try
 			{
-				receiver = InetAddress.getByName(m_remoteIP);
-			} catch (UnknownHostException e)
+				DataSource dataOutput = m_processor.getDataOutput();
+				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
+				m_outStream.start();
+			} catch(Exception e)
 			{
 				System.err.println(e.getLocalizedMessage());
 				e.printStackTrace();
 				return;
 			}
-			try
-			{
-				m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_rtpPort);
-				m_remoteReceiverAddress = new SessionAddress(receiver, m_rtpPort);
-				m_rtpManager.initialize(new SessionAddress[] { m_localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
-				m_rtpManager.addTarget(m_remoteReceiverAddress);
-				m_outStream = m_rtpManager.createSendStream(dataOutput, 0);
-				m_outStream.start();
-			} catch (InvalidSessionAddressException e)
-			{
-				System.err.println(e.getLocalizedMessage());
-				e.printStackTrace();
-				return;
-			}catch (UnsupportedFormatException e)
-			{
-				System.err.println(e.getLocalizedMessage());
-				e.printStackTrace();
-				return;
-			} catch (IOException e)
-			{
-				System.err.println(e.getLocalizedMessage());
-				e.printStackTrace();
-				return;
-			} 
 			m_processor.start();
 			System.out.println("Processor started");
 		}
@@ -267,8 +279,10 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		}
 		else if(event instanceof ByeEvent)
 		{
-			Participant newReceiver = ((ByeEvent) event).getParticipant();
-			String cname = newReceiver.getCNAME();
+			Participant participant = ((ByeEvent) event).getParticipant();
+			String cname = "unknown";
+			if(participant != null)
+				cname = participant.getCNAME();
 			System.out.println(cname + " closed the stream: " + ((ByeEvent) event).getReason());
 			if(m_player != null)
 			{
