@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.lang.*;
+import javax.swing.*;
 /**********************************************************
  * Write a description of class DCCServer here.
  * 
@@ -15,18 +16,31 @@ public class DCCServer
 
     /**Connection Socket used to send data to the client and recive data back**/
     Socket connectionSocket;
-    
+
     /**Get data in from the client**/
     BufferedReader inFromClient;
-    
+
     /**Send Data out to the client**/
     DataOutputStream outToClient;
-    
+
+    /**Ip Address of the client**/
+    String clientIP;
+
+    /**Port used to communicate to the Client**/
+    int port;
+
+    /**Name of the file that will be received from the client**/
+    String fileName;
+
+    /**The length of the file that weill be received**/
+    int fileLength;
+
     /*********************************************************
      * Constructor for objects of class DCCServer
      *********************************************************/
     public DCCServer()
     {
+
     }
 
     /***********************************************************
@@ -61,6 +75,9 @@ public class DCCServer
                     //Read in what the client sent to the server
                     String clientMessage = inFromClient.readLine();
                     System.out.println("Received From Client: " + clientMessage);
+
+                    //Figure out what type of message this is and what to do with it
+                    trafficDirector(clientMessage);
                 }
                 else {
                     start();
@@ -71,6 +88,157 @@ public class DCCServer
 
         }
 
+    }
+
+    /*********************************************************
+     * Traffic Director - received something from the client,
+     * figure out what to do with it next
+     **********************************************************/
+    public void trafficDirector(String str) {
+        if(str.startsWith("DCC SEND")) {
+            breakHeader(str);
+            //The Client wants to send a file, ask the user if
+            //that is alright with them and take approaite action
+            if(checkAcceptance()) {
+                sendFirstAck();
+            }
+
+        }
+    }
+
+    /*********************************************************
+     * Split the header doun into it's individual parts
+     *********************************************************/
+    public void breakHeader(String str) {
+
+        String[] results = str.split(" ");
+        //Ip Address of the client
+        clientIP = results[2].trim();
+        //Port used to communicate to the Client
+        port = Integer.parseInt(results[3].trim());
+        //Name of the file that will be received from the client
+        fileName = results[4].trim();
+        //The length of the file that weill be received
+        fileLength = Integer.parseInt(results[5].trim());
+
+    }
+
+    /*********************************************************
+     * THe Client would like to send a file, ask the user
+     * if they are up for that
+     **********************************************************/
+    public boolean checkAcceptance() {
+        boolean toReturn = false;
+
+        //Text to display in the pop-up
+        String displayText = "Do You accept the request to be sent " +
+            "the file: " + fileName + "?";
+
+        //create pop-up and get user's response
+        JOptionPane pane = new JOptionPane(displayText);
+        Object[] options = new String[] { "Accept", "Decline" };
+        pane.setOptions(options);
+        JDialog dialog = pane.createDialog(new JFrame(), "Dilaog");
+        dialog.setVisible(true);
+        Object obj = pane.getValue(); 
+        int result = -1;
+        for (int k = 0; k < options.length; k++)
+            if (options[k].equals(obj))
+                result = k;
+
+        //User Accepts
+        if(result == 0) {
+            System.out.println("You accepted the file transfer, request sent to client");
+            toReturn = true;
+        }
+        //User Declines
+        else {
+            System.out.println("You have choosen the decline the file transfer request");
+        }
+
+        return toReturn;
+    }
+
+    /*********************************************************
+     * Acknowlage the client's last transmittion 
+     **********************************************************/
+    public void sendFirstAck() {
+        String hostname = "";
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+
+            // Get IP Address
+            byte[] ipAddr = addr.getAddress();
+
+            // Get hostname
+            hostname = addr.getHostAddress();
+        } catch (UnknownHostException e) {
+        }
+        String ack = "DCC FILE " + hostname + " " + fileName;
+        try {
+            outToClient.writeBytes(ack + '\n');
+        } catch(IOException e) {
+            System.out.println("Error sending first ack: " + e);
+        }
+
+        //Get Ready for incoming data
+        saveFile();
+    }
+
+    /*********************************************************
+     * Take data packets coming in from the client and 
+     * use them to make a byte array that can be used to
+     * create a file onece all data is received
+     **********************************************************/
+    public void saveFile() {
+        //Size of data received
+        int packetSize = 0;
+
+        char[] toSave = new char[fileLength+1024];
+
+        int filePointer = 0;
+        do {
+
+            try{
+                inFromClient.read(toSave, filePointer, 1024);
+            } catch(IOException e) {
+                System.out.println("Error receiving data from the client");
+            }
+
+            sendAck(packetSize);
+            //Check to see if that was the last packet - if so, save file
+        }while(packetSize == 1024);
+        writeFileToMem(toSave);
+    }
+
+    /**********************************************************
+     * Tell the client that the server received a packet of 
+     * the size in argument
+     **********************************************************/
+    public void sendAck(int size) {
+        String ack = "" + size;
+        try {
+            outToClient.writeBytes(ack + '\n');
+        } catch(IOException e) {
+            System.out.println("Error sending ack: " + e);
+        }
+    }
+
+    /*********************************************************
+     * Create a file from the byte array full of data
+     * received from the client
+     **********************************************************/
+    public void writeFileToMem(char[] toSave) {
+        try{
+            byte[] tmp = new byte[fileLength];
+            for(int i = 0; i < fileLength; i++) {
+                tmp[i] = (byte) toSave[i];
+            }
+            FileOutputStream out = new FileOutputStream(new File(fileName));
+            out.write(tmp, 0, fileLength);
+        }catch(IOException e) {
+            System.out.println("Error writting file to filesytem " + e);
+        }
     }
 
     /**********************************************************

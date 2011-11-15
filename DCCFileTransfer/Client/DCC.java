@@ -34,6 +34,9 @@ public class DCC
     /**Read in from the socket**/
     BufferedReader inFromServer;
 
+    /**IP of the server to send to -- not used right now as we get IP from user input**/
+    String destIP;
+
     /**********************************************************************
      * Constructor for objects of class DCC
      **********************************************************************/
@@ -90,7 +93,7 @@ public class DCC
 
             getFile(fileName.trim());
 
-           // byte[] firstHeaderByte = createConnectionHeaderByte();
+            // byte[] firstHeaderByte = createConnectionHeaderByte();
 
             String firstHeaderString = createConnectionHeaderString();
 
@@ -114,6 +117,88 @@ public class DCC
             System.out.println("Error Sending Header to Server: " + e);
         }
         System.out.println("Succesfully Sent Header: " + header + " to the server");
+
+        waitForAck();
+    }
+
+    /*************************************************************
+     * Wait for the acknowlege from the server
+     **************************************************************/
+    public void waitForAck() {
+        System.out.println("Waiting for ACK from the Server");
+        String reply = "";
+        //Get what the server sent back
+        try {
+            reply = inFromServer.readLine();
+        }catch(IOException e) {
+            System.out.println("Error reading in ack from server: " + e);
+        }
+
+        System.out.println("Received following ack from server: " + reply);
+
+        String[] results = reply.split(" ");
+        if(results[1].trim().equals("FILE") && results[3].trim().equals(fileName)) {
+            destIP = results[2].trim();
+            sendFile(destIP);
+        }
+
+    }
+
+    /************************************************************
+     * Send File to the server in 1024 byte packets
+     *************************************************************/
+    public void sendFile(String serversIPAddress) {
+        //This will be the size expected to tbe ack'd by the server
+        int packetSizeSent = 1024;
+
+        //Keep Track of how much of the file has been sent so far
+        int filePointer = 0;
+        while(filePointer+1024 < fileLength) {
+            try{
+                //Send part of the array from filePointer to filePointer+1024
+                outToServer.write(fileToSend, filePointer, 1024);
+            }catch(IOException e) {
+                System.out.println("Error sending data to the server: " + e);
+            }
+            waitForAck(packetSizeSent);
+            filePointer = filePointer + 1024;
+        }
+
+        //Send the rest of the file (less then 1024 bytes)
+        int leftToSend = fileLength - filePointer;
+        try {
+            //Send the last part of the array from filePointer to the end
+            outToServer.write(fileToSend, filePointer, leftToSend);
+        }catch(IOException e) {
+            System.out.println("Error sending data to the server: " + e);
+        }
+        waitForAck(leftToSend);
+
+        System.out.println("File Successfuly Sent To The Server :) ");
+    }
+
+    /************************************************************
+     * Wait for the Server to acknowlege the client's latest 
+     * data transfer
+     ***********************************************************/
+    public void waitForAck(int amount) {
+        System.out.println("Waiting for ACK from the Server");
+        String reply = "";
+        //Get what the server sent back
+        try {
+            reply = inFromServer.readLine();
+        }catch(IOException e) {
+            System.out.println("Error reading in ack from server: " + e);
+        }
+
+        System.out.print("Received following ack from server: " + reply);
+        if(Integer.parseInt(reply) == amount) {
+            System.out.println(" Which is correct!");
+        }
+        else {
+            //Take some action as the wrong ack was recieved
+        }
+
     }
 
     /*************************************************************
