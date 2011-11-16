@@ -3,6 +3,11 @@ import java.net.*;
 import java.util.*;
 import java.lang.*;
 import javax.swing.*;
+import java.awt.Toolkit;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Date;
+
 /**********************************************************
  * Write a description of class DCCServer here.
  * 
@@ -30,11 +35,17 @@ public class DCCServer
     int port;
 
     /**Name of the file that will be received from the client**/
-    String fileName;
+    String fileName, fileToSave;
 
     /**The length of the file that weill be received**/
     int fileLength;
 
+    /**Array to read file data into - declare instance to be used in Timer Class**/
+    byte[] toSave;
+
+    boolean again;
+    
+    int byteCounter;
     /*********************************************************
      * Constructor for objects of class DCCServer
      *********************************************************/
@@ -49,6 +60,7 @@ public class DCCServer
     public void start() {
 
         try {
+
             listenSocket = new ServerSocket(6789);            
             System.out.println("Attempting to bind to port 80");
             while(listenSocket == null) {
@@ -148,6 +160,13 @@ public class DCCServer
 
         //User Accepts
         if(result == 0) {
+            String input = null;
+            while(input == null || input.equals("")) {
+                input = JOptionPane.showInputDialog(null, "Please, Enter Path with File Name" + "\n" +
+                    " Where You Like This File To Be Saved");
+                fileToSave = input.trim();
+            }
+
             System.out.println("You accepted the file transfer, request sent to client");
             toReturn = true;
         }
@@ -191,23 +210,57 @@ public class DCCServer
      * create a file onece all data is received
      **********************************************************/
     public void saveFile() {
-        //Size of data received
-        int packetSize = 0;
 
-        char[] toSave = new char[fileLength+1024];
+        toSave = new byte[fileLength+1024];
 
         int filePointer = 0;
-        do {
 
+        byteCounter = 0;
+
+
+        try {
+            //try to avoid a race situation
+            Thread.sleep(4000);
+        }catch(Exception e) {
+        }
+
+        do {
+            int numberOfMillisecondsInTheFuture = 5000; // 5 sec
+            Date timeToRun = new Date(System.currentTimeMillis()+numberOfMillisecondsInTheFuture);
+            final Timer timer = new Timer();
+
+            timer.schedule(new TimerTask() {
+                    public void run() {
+                        System.out.println("timeout occured - assuming end of transfer");
+                        again = false;
+                        sendAck(byteCounter);
+                        //filePointer = filePointer+ byteCounter;
+                        writeFileToMem(toSave);
+                        timer.cancel();
+                    }
+                }, timeToRun);
+                byteCounter = 0;
             try{
-                inFromClient.read(toSave, filePointer, 1024);
-            } catch(IOException e) {
+                int i;
+                byte b;
+                again = true;
+                do{
+                    i = inFromClient.read();
+                    b = (byte) i;
+                    byteCounter++;
+                    toSave[filePointer+byteCounter] = b;
+                }while(byteCounter < 1024 && again);
+                System.out.println("Out Of The While Loop");
+                timer.cancel();
+            } catch(Exception e) {
                 System.out.println("Error receiving data from the client");
             }
-
-            sendAck(packetSize);
+            //   timer.cancel();
+            sendAck(byteCounter);
+            filePointer = filePointer + byteCounter;
             //Check to see if that was the last packet - if so, save file
-        }while(packetSize == 1024);
+        }while(byteCounter > 1000);
+
         writeFileToMem(toSave);
     }
 
@@ -228,13 +281,14 @@ public class DCCServer
      * Create a file from the byte array full of data
      * received from the client
      **********************************************************/
-    public void writeFileToMem(char[] toSave) {
+    public void writeFileToMem(byte[] toSave) {
         try{
+            System.out.println("Saving The File");
             byte[] tmp = new byte[fileLength];
             for(int i = 0; i < fileLength; i++) {
                 tmp[i] = (byte) toSave[i];
             }
-            FileOutputStream out = new FileOutputStream(new File(fileName));
+            FileOutputStream out = new FileOutputStream(new File(fileToSave));
             out.write(tmp, 0, fileLength);
         }catch(IOException e) {
             System.out.println("Error writting file to filesytem " + e);
