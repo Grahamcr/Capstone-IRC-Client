@@ -52,10 +52,10 @@ public class VoicePlayer extends Thread{
  
     public void run() {
     	int left = 0;
-    	byte[] buffer = new byte[4400];
+    	byte[] buffer = new byte[640];
     	boolean run = true;
     	sourceLine.start();
-       while (run) {
+    	while (run) {
  
             try {
             	

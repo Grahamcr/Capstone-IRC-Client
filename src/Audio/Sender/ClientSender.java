@@ -16,9 +16,13 @@ public class ClientSender {
 		this.socket = socket;
 	}
 	
-	private void send(byte[] data) throws IOException {
-		socket.getOutputStream().write(data);
-			
+//	private void send(byte[] data) throws IOException {
+//		socket.getOutputStream().write(data);
+//	}
+	
+	private void send(byte[] data, int length) throws IOException{
+		if (!socket.isClosed())
+			socket.getOutputStream().write(data, 0, length);
 	}
 
 	public void start() throws IOException {
@@ -33,18 +37,12 @@ public class ClientSender {
 		while (voiceEnc.getEncode() == null) {
 			System.out.println("WAIT");
 		}
-		byte[] buffer = new byte[512];
 		
+		byte[] buffer = new byte[512];
 		while (true) {
-			
-            int offset = 0;
             int read = 0;
-            while (offset < buffer.length) {
-                read = voiceEnc.getEncode().read(buffer, offset, buffer.length - offset);
-                if (read != -1)
-                    offset = offset + read;
-            }
-            send(buffer);
+            read = voiceEnc.getEncode().read(buffer, 0, buffer.length);
+            send(buffer,read);
 		}
 	}
 	
