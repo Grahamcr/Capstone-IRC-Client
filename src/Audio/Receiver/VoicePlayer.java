@@ -14,6 +14,7 @@ public class VoicePlayer extends Thread{
 	private AudioInputStream audioInputStream;
 	private AudioFormat audioFormat;
 	private DataLine.Info info;
+	private boolean muted = false;
 	
 	public void setupSound(InputStream in) {
         InputStream audioStream = in;
@@ -60,7 +61,7 @@ public class VoicePlayer extends Thread{
             try {
             	
                 while ((left = audioInputStream.read(buffer, 0, buffer.length)) != -1) {
-                    if (left > 0) {
+                    if (left > 0 && !muted) {
                         sourceLine.write(buffer, 0, left);
                     }
  
@@ -74,5 +75,9 @@ public class VoicePlayer extends Thread{
             sourceLine.close(); 
  
         }
+    }
+    
+    public void setMuted(boolean mute) {
+    	muted = mute;
     }
 }

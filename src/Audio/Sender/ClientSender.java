@@ -11,6 +11,7 @@ public class ClientSender {
 	private VoiceRecorder voiceRec;
 	private VoiceEncoder voiceEnc;
 	private Socket socket;
+	private boolean muted = false;
 	
 	public ClientSender(Socket socket) {
 		this.socket = socket;
@@ -21,7 +22,7 @@ public class ClientSender {
 //	}
 	
 	private void send(byte[] data, int length) throws IOException{
-		if (!socket.isClosed())
+		if (!socket.isClosed() && !muted)
 			socket.getOutputStream().write(data, 0, length);
 	}
 
@@ -44,6 +45,10 @@ public class ClientSender {
             read = voiceEnc.getEncode().read(buffer, 0, buffer.length);
             send(buffer,read);
 		}
+	}
+	
+	public void setMuted(boolean mute) {
+		muted = mute;
 	}
 	
 }

@@ -59,5 +59,9 @@ public class ClientReceiver {
 			e.printStackTrace();
 		}
 	}
+	
+	public VoicePlayer getPlyer() {
+		return player;
+	}
 
 }
