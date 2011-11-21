@@ -32,8 +32,10 @@ public class ClientReceiver {
         decoder.start(new AudioFormat(
                 AudioFormat.Encoding.PCM_SIGNED, 44100.0F, 16, 1, 2,
                 44100.0F, false));
+        
         while (decoder.getDecode() == null)
         	System.out.println("WAIT");
+        
         player.setupSound(decoder.getDecode());
         player.start();
 	}
@@ -56,6 +58,10 @@ public class ClientReceiver {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public VoicePlayer getPlyer() {
+		return player;
 	}
 
 }

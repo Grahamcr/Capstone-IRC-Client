@@ -12,6 +12,8 @@ import Audio.Sender.ClientSender;
 public class AudioConnection{
 
 	Boolean connectionOpened = false;
+	private ClientReceiver receiver;
+	private ClientSender sender;
 	
 	public Boolean getConnectionOpened() {
 		return connectionOpened;
@@ -29,11 +31,11 @@ public class AudioConnection{
 		try {
 			Socket socket = new Socket(InetAddress.getByName(ip), port);
 			
-			ClientReceiver reciever = new ClientReceiver(socket);
+			receiver = new ClientReceiver(socket);
 			// starts decoder and player
-			reciever.start();	
+			receiver.start();	
 			
-			ClientSender sender = new ClientSender(socket);
+			sender = new ClientSender(socket);
 			sender.start();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -49,11 +51,11 @@ public class AudioConnection{
 			// waits for connection
 			Socket clientSocket = serverSocket.accept();
 			
-			ClientReceiver reciever = new ClientReceiver(clientSocket);
+			receiver = new ClientReceiver(clientSocket);
 			// starts decoder and player
-			reciever.start();	
+			receiver.start();	
 			
-			ClientSender sender = new ClientSender(clientSocket);
+			sender = new ClientSender(clientSocket);
 			sender.start();
 			
 		} catch (IOException e) {
@@ -61,4 +63,14 @@ public class AudioConnection{
 		}
 		
 	}
+	
+	public void muteSpeaker(boolean mute) {
+		receiver.getPlyer().setMuted(mute);
+	}
+	
+	public void muteMicrophone(boolean mute) {
+		sender.setMuted(mute);
+	}
+	
+	
 }
