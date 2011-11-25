@@ -181,7 +181,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 				public void actionPerformed(ActionEvent arg0) {
 					String tempPort = new String("");
 					ipAddr = JOptionPane.showInputDialog(
-						"Enter the server name or IP", "35.40.197.57");
+						"Enter the server name or IP", "192.168.99.180");
 					if (ipAddr == null) {
 						return;
 					}
@@ -511,5 +511,14 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
   			  };
   			} ).start();	
 			
+		}
+
+		@Override
+		public void writeString(String channel, String name, String text) {
+			// TODO Auto-generated method stub
+			// TODO Auto-generated method stub
+						System.out.println(channel + " " + name + ": " + text);
+						
+						chatMessageBox.append(name + ": " + text + "\n");
 		}
 	}

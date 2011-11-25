@@ -124,7 +124,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    		   
 		    	   }
 		    	   
-		    	   guiConnection.writeString(user, text);
+		    	   guiConnection.writeString(chan, user, text);
 	    	   }
 	       }
 	       else if( commandToken.equals("001"))
