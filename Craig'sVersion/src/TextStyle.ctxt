@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.params=big\ italic\ textSize\ forgroundColor\ backgroundColor
+comment0.target=TextStyle(java.lang.Boolean,\ java.lang.Boolean,\ int,\ java.awt.Color,\ java.awt.Color)
+comment1.params=
+comment1.target=java.lang.Boolean\ getBig()
+comment10.params=backgroundColor
+comment10.target=void\ setBackgroundColor(java.awt.Color)
+comment2.params=big
+comment2.target=void\ setBig(java.lang.Boolean)
+comment3.params=
+comment3.target=java.lang.Boolean\ getItalic()
+comment4.params=italic
+comment4.target=void\ setItalic(java.lang.Boolean)
+comment5.params=
+comment5.target=int\ getTextSize()
+comment6.params=textSize
+comment6.target=void\ setTextSize(int)
+comment7.params=
+comment7.target=java.awt.Color\ getForgroundColor()
+comment8.params=forgroundColor
+comment8.target=void\ setForgroundColor(java.awt.Color)
+comment9.params=
+comment9.target=java.awt.Color\ getBackgroundColor()
+numComments=11

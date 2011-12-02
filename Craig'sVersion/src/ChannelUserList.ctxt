@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=
+comment0.target=void\ removeAllUser()
+comment1.params=user\ loggedName
+comment1.target=ChannelUser\ addUser(UserInfo,\ java.lang.String)
+comment2.params=user
+comment2.target=void\ removeUser(ChannelUser)
+comment3.params=
+comment3.target=java.util.ArrayList\ getUserListArray()
+comment4.params=name
+comment4.target=ChannelUser\ getUserByName(java.lang.String)
+numComments=5

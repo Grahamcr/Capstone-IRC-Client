@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=comp\ con
+comment0.target=ContextWhoisAction(javax.swing.JList,\ IrcServerInterface)
+comment1.params=e
+comment1.target=void\ actionPerformed(java.awt.event.ActionEvent)
+comment2.params=
+comment2.target=boolean\ isEnabled()
+numComments=3

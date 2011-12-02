@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.params=text\ uri
+comment0.target=SwingLink(java.lang.String,\ java.lang.String)
+comment0.text=\r\n\ Constructor\r\n
+comment1.params=text\ uri
+comment1.target=SwingLink(java.lang.String,\ java.net.URI)
+comment1.text=\r\n\ Constructor\r\n
+comment2.params=t\ u
+comment2.target=void\ setup(java.lang.String,\ java.net.URI)
+comment2.text=\r\n\ Setup\ the\ hyperlink\ to\ take\ the\ user\ to\ the\ proper\ website\r\n\ when\ clicked\ on\r\n
+comment3.params=e
+comment3.target=void\ mouseClicked(java.awt.event.MouseEvent)
+comment4.params=e
+comment4.target=void\ mouseEntered(java.awt.event.MouseEvent)
+comment5.params=e
+comment5.target=void\ mouseExited(java.awt.event.MouseEvent)
+comment6.params=text
+comment6.target=void\ setText(java.lang.String)
+comment7.params=text\ ul
+comment7.target=void\ setText(java.lang.String,\ boolean)
+comment8.params=
+comment8.target=java.lang.String\ getRawText()
+comment9.params=uri
+comment9.target=void\ open(java.net.URI)
+numComments=10

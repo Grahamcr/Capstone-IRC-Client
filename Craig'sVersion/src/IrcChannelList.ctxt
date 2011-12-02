@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=
+comment0.target=IrcChannelList()
+comment1.params=username
+comment1.target=void\ removeUserFromChannels(java.lang.String)
+comment2.params=channel\ password
+comment2.target=void\ addChannel(java.lang.String,\ java.lang.String)
+comment3.params=channel
+comment3.target=IrcChannel\ getIrcChannel(java.lang.String)
+comment4.params=channel
+comment4.target=void\ removeChannel(java.lang.String)
+numComments=5

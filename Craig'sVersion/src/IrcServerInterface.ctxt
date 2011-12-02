@@ -1,0 +1,20 @@
+#BlueJ class context
+comment0.params=text
+comment0.target=void\ sendText(java.lang.String)
+comment1.params=channel\ message
+comment1.target=void\ sentTextToChannel(java.lang.String,\ java.lang.String)
+comment2.params=username\ message
+comment2.target=void\ sendCommandMessage(java.lang.String,\ java.lang.String)
+comment3.params=style
+comment3.target=void\ setTextStyle(TextStyle)
+comment4.params=connection
+comment4.target=void\ setTextReceiver(IrcGuiInterface)
+comment5.params=ip\ port\ nickname\ realname
+comment5.target=void\ openConnection(java.lang.String,\ int,\ java.lang.String,\ java.lang.String)
+comment6.params=username\ port\ firstRequest
+comment6.target=void\ openVideoConnection(java.lang.String,\ int,\ java.lang.Boolean)
+comment7.params=username\ port
+comment7.target=void\ openAudioConnection(java.lang.String,\ int)
+comment8.params=username\ port
+comment8.target=void\ openFileConnection(java.lang.String,\ int)
+numComments=9

@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.params=
+comment0.target=void\ run()
+comment1.params=
+comment1.target=java.lang.String\ receiveLine()
+comment2.params=ip\ port
+comment2.target=TCPConnection(java.lang.String,\ int)
+comment3.params=
+comment3.target=java.lang.String\ getHostname()
+comment4.params=args
+comment4.target=void\ main(java.lang.String[])
+comment5.params=nachricht
+comment5.target=void\ sendMessage(java.lang.String)
+numComments=6

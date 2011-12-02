@@ -1,0 +1,22 @@
+#BlueJ class context
+comment0.params=name\ text
+comment0.target=void\ writeString(java.lang.String,\ java.lang.String)
+comment1.params=style
+comment1.target=void\ setTextStyle(TextStyle)
+comment2.params=sender
+comment2.target=void\ addIrcServer(IrcServerInterface)
+comment3.params=info
+comment3.target=void\ addUserInfoInterface(UserInfoInterface)
+comment4.params=channel\ privChat
+comment4.target=void\ openChannel(IrcChannel,\ boolean)
+comment5.params=channel
+comment5.target=void\ closeChannel(java.lang.String)
+comment6.params=
+comment6.target=void\ updateChannel()
+comment7.params=username\ ip\ port\ startGui
+comment7.target=void\ openVideoConnection(java.lang.String,\ java.lang.String,\ int,\ java.lang.Boolean)
+comment8.params=username\ ip\ port
+comment8.target=void\ openAudioConnection(java.lang.String,\ java.lang.String,\ int)
+comment9.params=username\ ip\ port
+comment9.target=void\ openFileConnection(java.lang.String,\ java.lang.String,\ int)
+numComments=10
