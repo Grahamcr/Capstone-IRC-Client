@@ -10,6 +10,7 @@ public interface IrcServerInterface extends Runnable{
 	public void openConnection(String ip, int port, String nickname, String realname );
 	public void openVideoConnection(String username, int port, Boolean firstRequest);
 	public void openAudioConnection(String username, int port);
+	public String getServerName();
 
 	
 
