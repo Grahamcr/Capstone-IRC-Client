@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.params=loggedUser\ loggedName
+comment0.target=ChannelUser(UserInfo,\ java.lang.String)
+comment1.params=
+comment1.target=UserInfo\ getUser()
+comment2.params=
+comment2.target=boolean\ isAdmin()
+comment3.params=isAdmin
+comment3.target=void\ setAdmin(boolean)
+comment4.params=
+comment4.target=boolean\ isOperator()
+comment5.params=isOperator
+comment5.target=void\ setOperator(boolean)
+numComments=6

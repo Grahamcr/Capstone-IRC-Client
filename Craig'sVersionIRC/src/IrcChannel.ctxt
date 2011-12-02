@@ -1,0 +1,17 @@
+#BlueJ class context
+comment0.params=password
+comment0.target=void\ loadChannelData(java.lang.String)
+comment0.text=\r\n\ This\ funktion\ should\ be\ overwrited\ and\ load\ the\ userlist\ of\ the\ given\ channel\r\n
+comment1.params=
+comment1.target=java.lang.String\ getName()
+comment2.params=name
+comment2.target=IrcChannel(java.lang.String)
+comment3.params=
+comment3.target=ChannelUserList\ getUserList()
+comment4.params=user\ name
+comment4.target=void\ addUser(UserInfo,\ java.lang.String)
+comment5.params=user
+comment5.target=void\ removeUser(ChannelUser)
+comment6.params=name
+comment6.target=ChannelUser\ getUserByName(java.lang.String)
+numComments=7
