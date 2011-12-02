@@ -146,6 +146,11 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 		
 	}
 
+	@Override
+	public String getServerName() {
+		return "Name des Servers";
+	}
+
 
 
 	

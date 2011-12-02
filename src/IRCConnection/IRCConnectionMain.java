@@ -373,5 +373,11 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     	this.sendCommandMessage(username, message);
     	
 	}
+
+	@Override
+	public String getServerName() {
+		return serverName;
+		
+	}
 	
 }

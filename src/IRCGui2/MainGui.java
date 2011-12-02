@@ -6,7 +6,9 @@ public class MainGui {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new TestGui();
+		new Thread(new GuiMain()).start();
+		
+//		new TestGui();
 		
 
 	}
