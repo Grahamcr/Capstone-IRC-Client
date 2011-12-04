@@ -46,7 +46,7 @@ public class DCC
     public DCC(String pIP, int pPort)
     {
         port = pPort;
-        //address = pIP;
+        address = pIP;
         start();
     }
 
@@ -65,13 +65,12 @@ public class DCC
 
         try{
             
-            
+            /**
             String input = null;
             while(input == null || input.equals("")) {
                 input = JOptionPane.showInputDialog(null, "Please, Enter the IP Address");
             }
             address = input.trim();
-            /**
             String input2 = null;
             while(input2 == null || input2.equals("")) {
                 input2 = JOptionPane.showInputDialog(null, "Please, Enter the port");

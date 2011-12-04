@@ -1,7 +1,6 @@
 #BlueJ class context
 comment0.params=
 comment0.target=java.lang.Boolean\ getConnectionOpened()
-comment0.text=\ \r\n\ \ \ \ public\ FileConnection(String\ ip)\ {\r\n\ \ \ \ \ \ \ \ connectIP\ \=\ ip;\r\n\ \ \ \ }\r\n
 comment1.params=connectionOpened
 comment1.target=void\ setConnectionOpened(java.lang.Boolean)
 comment2.params=ip\ port

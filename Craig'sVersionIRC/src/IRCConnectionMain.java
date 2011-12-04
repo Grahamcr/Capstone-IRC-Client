@@ -3,10 +3,7 @@
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import java.awt.Toolkit;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Date;
+
 
 
 
@@ -329,21 +326,6 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
        }
        
        guiConnection.openChannel(chan, false);
-       
-        int delay = 5000;   // delay for 5 sec.
-        int period = 1000;  // repeat every sec.
-        Timer timer = new Timer();
-
-    //   timer.scheduleAtFixedRate(new TimerTask() {
-     //   public void run() {
-      //          System.out.println("!!!!!!!!!!!!Updating list");
-      //          guiConnection.updateChannel();
-      //sendCommandMessage(name, "USERS ");
-     //                   
-       // }
-   //}, delay, period);
-                
-         
     }
     
     public void openNewChannelReady(StringTokenizer st)
@@ -401,8 +383,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     @Override
     public void openFileConnection(final String username, final int port) {
         // TODO Auto-generated method stub
-        final String ip = GetClientIP.getAdress();
-        String message = "FILE " + GetClientIP.getAdresAsInt() + " " + port;
+        String ip = GetClientIP.getAdress();
+        String message = "FILE" + GetClientIP.getAdresAsInt() + " " + port;
         
         if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
         {
@@ -415,9 +397,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
                       FileConnection filec = new FileConnection();
                       filec.waitForAudioConnection(port);
                       filec.setConnectionOpened(true);
+                      filec.startFileConnection(username, port);
                       fileConnMap.put(username, filec);
-                      //filec.startFileConnection(ip, port, username);
-                      
                   };
                 } ).start();    
         }

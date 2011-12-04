@@ -17,13 +17,10 @@ class ContextFileAction extends AbstractAction{
 	private static final long serialVersionUID = 1L;
 	JList comp; 
     IrcServerInterface conn;
-    String ip;
     public ContextFileAction(JList comp, IrcServerInterface con){ 
         super("Start File Transfer"); 
         this.comp = comp; 
         this.conn = con;
-
-       
     } 
  
     public void actionPerformed(ActionEvent e){ 

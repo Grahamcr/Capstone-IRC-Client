@@ -8,19 +8,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import java.net.*;
-
 public class FileConnection{
 
     Boolean connectionOpened = false;
     private DCC d;
     private DCCServer ds;
 
-   /** 
-    public FileConnection(String ip) {
-        connectIP = ip;
-    }
-    **/
     public Boolean getConnectionOpened() {
         return connectionOpened;
     }
@@ -90,7 +83,7 @@ public class FileConnection{
 
         receiver = new ClientReceiver(socket);
         // starts decoder and player
-        receiver.start();   
+        receiver.start();	
 
         sender = new ClientSender(socket);
         sender.start();
