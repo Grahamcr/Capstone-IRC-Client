@@ -3,7 +3,9 @@ package de.fhh.CapstoneIRC.Video;
  * @author Julian Junghans
  * This Class initializes and handles the Webcam and the RTP connection
  */
+import javax.media.CaptureDeviceManager;
 import javax.media.Manager;
+import javax.media.format.VideoFormat;
 import javax.media.protocol.DataSource;
 import javax.media.protocol.SourceCloneable;
 
@@ -97,5 +99,29 @@ public class VideoConnection
 			m_vsource.closeSource();
 			m_vsource = null;
 		}
+	}
+	
+	public static boolean isVideoAvailable()
+	{
+		if(System.getProperty("os.name").toLowerCase().contains("win"))
+		{
+			try
+			{
+				@SuppressWarnings("rawtypes")
+				java.util.Vector deviceListVector = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
+				if (deviceListVector == null || deviceListVector.size() == 0)
+				{
+					return false;
+				}
+				else
+					return true;
+			}
+			catch(Exception e)
+			{
+				return false;
+			}
+		}
+		else
+			return false;
 	}
 }
