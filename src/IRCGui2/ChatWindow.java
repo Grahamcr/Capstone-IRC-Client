@@ -86,10 +86,7 @@ public class ChatWindow extends JSplitPane {
 
 	public void setEditPane(JEditorPane editPane) {
 		this.editPane = editPane;
-//		scrollPane.setViewportView(editPane);
-		scrollPane.repaint();
-		
-		System.out.println(editPane.getText());
+		scrollPane.setViewportView(editPane);
 	}
 
 

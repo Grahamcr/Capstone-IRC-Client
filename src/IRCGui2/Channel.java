@@ -17,6 +17,7 @@ public class Channel extends JButton {
 		super(channel.getName());
 		this.channel = channel;
 		this.editPane  = new JEditorPane();
+		editPane.setEditable(false);
 		editPane.setText("You joind the channel " + channel.getName());
 	}
 	

@@ -98,6 +98,9 @@ public class ChannelList extends JPanel {
 	
 	public void removeChannel(Channel c) {
 		channelPanel.remove(c);
+		if (channelPanel.getComponents().length > 0)
+			setActive(channelPanel.getComponent(0));
+		
 		channelPanel.revalidate();
 	}
 	
@@ -118,6 +121,8 @@ public class ChannelList extends JPanel {
 			channel.appendText(text);
 			if (!channel.equals(activeChannel))
 				channel.setForeground(Color.RED);
+			else
+				activeChannel.getEditPane().validate();
 		}
 	}
 	
