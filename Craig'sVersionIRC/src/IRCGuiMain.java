@@ -257,11 +257,8 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             
             // Add Componets To JFrame
             this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-            //this.getContentPane().add(chatInputBox);
             this.getContentPane().add(chatMessageBox, BorderLayout.CENTER);
-            //this.getContentPane().add(submit);
             this.getContentPane().add(userList, BorderLayout.EAST);
-            //this.getContentPane().add(openConnectionButton, BorderLayout.NORTH);
             this.getContentPane().add(topPanel, BorderLayout.NORTH);
             this.pack();
         

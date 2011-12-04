@@ -28,6 +28,8 @@ public class VoiceChat extends JFrame {
     SourceDataLine sourceDataLine;
 
     String address;
+    
+    InetAddress sendTo;
 
     int port;
 
@@ -48,6 +50,11 @@ public class VoiceChat extends JFrame {
         captureBtn.setBackground(Color.GREEN);
         captureBtn.setForeground(Color.BLUE);
         address = pIP.trim();
+        try {
+            sendTo = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         port = pPort;
         this.setBackground(Color.BLACK);
         setLayout(new GridLayout(1, 2));
@@ -191,8 +198,8 @@ public class VoiceChat extends JFrame {
                     int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
 
                     //Name or explicit IP Address - right now just send it back to me for testing purposes
-                    InetAddress ipAddress = InetAddress.getByName(address);
-
+                    //InetAddress ipAddress = InetAddress.getByName(address);
+                    InetAddress ipAddress = sendTo;
                     if(cnt > 0){
 
                         //If have data - send it !
@@ -243,6 +250,8 @@ public class VoiceChat extends JFrame {
 
                     //Get the data byte array from the packet
                     byte[] data = receivePacket.getData();
+                    
+                    sendTo = receivePacket.getAddress();
 
                     //Add the most recently received data to that which we are already holding
                     int i = 0;
