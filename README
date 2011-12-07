@@ -1,9 +1,93 @@
-Welcome to our IRC code repository!
+Welcome to the GVIRC Client REAME 
+A Grand Valley State University and Fachhochschule Hannover University of Applied Sciences and Arts Joint Capstone Project
+Version: v0.1
+Development Date: Fall 2011
+Language: Java
+External Libraries Used: Java Media Framework (JMF), Jspeex
+Team Members: Holger Rocks (HASA), Julian Junghans (HASA), Daniel Isern (HASA),    Craig Graham (GVSU)
+
+User Guide:
+Starting The GVIRC Client and Connecting To A IRC Server:
+	1. The GVIRC Client can be started in one of two ways:
+		1. Executed the included GVIRC.jar file using the Java Virtual Machine
+		2. Run the Main method in the IRCClientMain class from command line
+
+	Following either of the above options should open the client GUI, now you can connect to an IRC server of your choosing
 
 
-Craig
+Connectiong to an IRC Server:
+	1. Select the “Connect” button in the upper left of the screen
 
-Hallo :)
+	2. Enter the server name or IP to connect to (HASA Server chosen by default)
+
+	3. Enter the port number to use for this connection (6667 chosen by default)
+
+	4. Enter the username you would like to be known by (first seven characters of your computer’s hostname chosen by default)
+
+	5. Client will then attempt to establish a connection to the IRC server specified and will display it’s connection status in the IM feed once connection is successful/fails.
+
+6. By default you will be connected to the “test” channel on the server with which a connection was established with	
 
 
-This is a test
+
+Sending A IM or Private Message:
+	1. Type the IM text or Private Message (ex. “/join #test2”) you wish to send out to the channel in the input text field located at the bottom of the GUI
+
+	2. Select the “Send!” button located on the bottom right of the GUI screen
+
+	3. If you typed in IM text you should see your text appear in the IM feed or if you sent 
+a Private Message the server will receive your message.  Not all Private Messages are handled by the GVIRC client, so it is possible to send an unsupported action.  
+
+
+Starting A File Transfer:
+	1. Find the username in the User List located on the right-hand side of the GUI (This list refreshes every 15 seconds)
+	
+2. Right click on the username you wish to start a file transfer session with and select “Start a File Transfer”
+	
+3. Have the user you wish to exchange a file with complete steps 1 & 2 as well
+	
+4. After you select “Start a File Transfer” a pop-up box will appear on the user’s screen you selected to start a file transfer session with.  When that user does the same to your username in the list the same pop-up box will appear on your screen.  
+
+5. If you would like to send a file to another user, select “Send” and proceed to step six  If you would like to receive a file being sent by another user, select “Receive” and proceed to step eight 
+
+6. Input the filename, including the absolute path to the file you wish to send in the pop-up dialog box that appears and select “OK”
+
+7. The file transfer will run in the background.  The terminal window will display if the file transfer has been successful. This is the end of the instructions for the sender.  
+
+8. Once the sender inputs the filename they wish to send you will be prompted to either decline or accept the file transfer coming from the sender with a Yes/No dialog box.  
+If you select “Yes” proceed to step 8. 
+If you select “No” the transfer will be canceled and the connection between you and the sender will be closed.
+
+9. Input the complete path and filename you wish to save the incoming file as in the pop-up dialog box that appears and select “OK”.
+
+10. The file transfer will run in the background.  The terminal window will display if the file transfer has been successful.    
+
+		
+Starting A Voice or Video Chat:
+1. Find the username in the User List located on the right-hand side of the GUI (This list refreshes every 15 seconds)
+	
+2. Right click on the username you wish to start a voice or video chat with and select “Start Video” to start a video chat or “Start Audio” to start a voice chat. 
+
+3. Have the user you wish to exchange a file with complete steps 1 & 2 as well
+
+4. After you select “Start Video” or “Start Audio” a pop-up box will appear on the user’s screen you selected to start a voice or video chat with.  When that user does the same to your username in the list the same pop-up box will appear on your screen. 
+
+5. To start the voice or video chat select the “Start” button.  Once the user you have chosen to talk to has done the same as well the connection between the two of you will be opened and your chat will begin. 
+
+6. To end the voice or video chat select the “End Chat” button and close the chat GUI window. 
+
+
+
+
+
+
+
+WHOIS:
+	1. To send a WHOIS request to the IRC Server you are currently connected to for a specific username. Find the username in the User List located on the right-hand side of the GUI (This list refreshes every 15 seconds) that you wish to send the request to the serer for.
+	
+2. Right click on the username and select “Send WHOIS” to send a WHOIS request to the server for that username.
+
+3. The results of your query to the server will be displayed in the IM feed in the GUI.
+
+Visit The Development Team’s Website:
+	Select the “Visit Development Site” link located in the top right corner of the GUI. 
