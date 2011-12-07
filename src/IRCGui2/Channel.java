@@ -6,6 +6,10 @@ import javax.swing.JEditorPane;
 import ServerGuiCommunicationInterface.IrcChannel;
 
 public class Channel extends JButton {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3884219913826764238L;
 	private IrcChannel channel;
 	private JEditorPane editPane;
 	
@@ -18,7 +22,7 @@ public class Channel extends JButton {
 		this.channel = channel;
 		this.editPane  = new JEditorPane();
 		editPane.setEditable(false);
-		editPane.setText("You joind the channel " + channel.getName());
+		editPane.setText("You joined the channel " + channel.getName());
 	}
 	
 	@Override

@@ -1,5 +1,7 @@
 package IRCConnection;
 
+import FileTransfer.FileConnection;
+
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -35,6 +37,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	UserList globalUserList = new UserList();
 	private HashMap<String, Boolean> videoRequstMap = new HashMap<String, Boolean>();
 	private HashMap<String, AudioConnection> audioConnMap = new HashMap<String, AudioConnection>();
+	private HashMap<String, FileConnection> fileConnMap = new HashMap<String, FileConnection>();
 	
 	
 	
@@ -142,6 +145,10 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	       {
 	    	   String user = getNameFromToken(firstToken);	   
 	    	   userJoinsChannel(user, st);
+	       }
+	       else if (commandToken.equals("PART")) {
+	    	   String user = getNameFromToken(firstToken);
+	    	   userPartsChannel(user, st);
 	       }
 	       else if( commandToken.equals("QUIT"))
 	       {
@@ -258,7 +265,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	public void sentTextToChannel(String channel, String message) {
 		
 		sendText("PRIVMSG " + channel + " :" + message);
-		guiConnection.writeString(getCurrentUser().getName(), message);
+		guiConnection.writeString(channel, getCurrentUser().getName(), message);
 	}
 
 	@Override
@@ -275,7 +282,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	
 	public void userJoinsChannel(String user, StringTokenizer st)
 	{
-		 if(user != this.getCurrentUser().getName())
+		 if(!user.equals(this.getCurrentUser().getName()))
   	   {
   		   String channel = st.nextToken().substring(1);
     	   IrcChannel c = chanList.getIrcChannel(channel);
@@ -285,6 +292,13 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     		    guiConnection.updateChannel();
     	   }
   	   }
+	}
+	
+	public void userPartsChannel(String user, StringTokenizer st) {
+		if(user.equals(this.getCurrentUser().getName())) {
+			String channel = st.nextToken();
+			guiConnection.closeChannel(channel);
+		}
 	}
 	
 	public void openNewChannel(StringTokenizer st)
@@ -333,7 +347,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	@Override
 	public void openVideoConnection(String username, int port, Boolean firstRequest) {
 		// TODO Auto-generated method stub
-		String ip = GetClientIP.getAdress();
+//		String ip = GetClientIP.getAdress();
 		String req = "REQ";
 		
 		if( firstRequest == false)
@@ -351,7 +365,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	@Override
 	public void openAudioConnection(final String username, final int port) {
 		// TODO Auto-generated method stub
-		String ip = GetClientIP.getAdress();
+//		String ip = GetClientIP.getAdress();
     	String message = "DAC " + GetClientIP.getAdresAsInt() + " " + port;
     	
     	if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
@@ -373,6 +387,34 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     	this.sendCommandMessage(username, message);
     	
 	}
+	
+	@Override
+    public void openFileConnection(final String username, final int port) {
+        // TODO Auto-generated method stub
+//        String ip = GetClientIP.getAdress();
+        String message = "FILE" + GetClientIP.getAdresAsInt() + " " + port;
+        
+        if(fileConnMap.containsKey(username) && fileConnMap.get(username).getConnectionOpened() == true)
+        {
+            
+        }
+        else
+        {
+            new Thread( new Runnable() {
+                  public void run() {
+                      FileConnection filec = new FileConnection();
+                      filec.waitForAudioConnection(port);
+                      filec.setConnectionOpened(true);
+                      filec.startFileConnection(username, port);
+                      fileConnMap.put(username, filec);
+                  };
+                } ).start();    
+        }
+        
+        this.sendCommandMessage(username, message);
+        
+    }
+	
 
 	@Override
 	public String getServerName() {

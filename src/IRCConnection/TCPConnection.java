@@ -114,7 +114,7 @@ public class TCPConnection implements Runnable {
 		} 
 	}
 	
-	public static String getHostname()
+	public String getHostname()
 	{
 		InetAddress addr;
 		
@@ -133,28 +133,28 @@ public class TCPConnection implements Runnable {
 		}
 	}
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
-		  
-		String ip = "127.0.0.1";
-		
-		TCPConnection tcp = new TCPConnection(ip, 6667);
-		Thread t = new Thread(tcp);
-		t.start();
-		
-		String nachricht = "USER CapstoneIRC "+ tcp.getHostname() + " " + ip + " Holger";
-				
-		System.out.println(nachricht);
-		tcp.sendMessage(nachricht);
-		tcp.sendMessage("NICK Holger5");
-		
-		tcp.sendMessage("JOIN #test");
-		
-		while(true)
-		{
-			Thread.sleep(1000);
-			//tcp.sendMessageToChannel("test", "Dies ist eine Testnachricht");
-		}
-     }
+//	public static void main(String[] args) throws IOException, InterruptedException {
+//		  
+//		String ip = "127.0.0.1";
+//		
+//		TCPConnection tcp = new TCPConnection(ip, 6667);
+//		Thread t = new Thread(tcp);
+//		t.start();
+//		
+//		String nachricht = "USER CapstoneIRC "+ tcp.getHostname() + " " + ip + " Holger";
+//				
+//		System.out.println(nachricht);
+//		tcp.sendMessage(nachricht);
+//		tcp.sendMessage("NICK Holger5");
+//		
+//		tcp.sendMessage("JOIN #test");
+//		
+//		while(true)
+//		{
+//			Thread.sleep(1000);
+//			//tcp.sendMessageToChannel("test", "Dies ist eine Testnachricht");
+//		}
+//     }
 	
 
 	

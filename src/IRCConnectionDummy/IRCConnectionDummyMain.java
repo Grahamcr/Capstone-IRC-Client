@@ -151,6 +151,12 @@ public class IRCConnectionDummyMain implements IrcServerInterface, UserInfoInter
 		return "Name des Servers";
 	}
 
+	@Override
+	public void openFileConnection(String username, int port) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 	

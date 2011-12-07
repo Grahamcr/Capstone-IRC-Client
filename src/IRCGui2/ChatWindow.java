@@ -19,6 +19,11 @@ import ServerGuiCommunicationInterface.IrcServerInterface;
 
 public class ChatWindow extends JSplitPane {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6090458829602760335L;
+
 	private IrcServerInterface ircServer;
 	
 	private JEditorPane editPane;
@@ -37,7 +42,7 @@ public class ChatWindow extends JSplitPane {
 		editPane = new JEditorPane();
 		editPane.setPreferredSize(new Dimension(550, 480));
 		editPane.setEditable(false);
-		editPane.setText("erstes Fenster");
+		editPane.setText("start Window");
 		
 		userList = new JList(listModel);
 		
@@ -54,7 +59,8 @@ public class ChatWindow extends JSplitPane {
 					final JPopupMenu menu = new JPopupMenu(); 
 					menu.add(new ContextWhoisAction(userList, ircServer)); 
 					menu.add(new ContextVideoAction(userList, ircServer)); 
-					menu.add(new ContextAudioAction(userList, ircServer)); 
+					menu.add(new ContextAudioAction(userList, ircServer));
+					menu.add(new ContextFileAction(userList, ircServer));
 					
 					
 					//menu.addSeparator(); 

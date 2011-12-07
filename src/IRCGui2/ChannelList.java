@@ -11,7 +11,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import ServerGuiCommunicationInterface.IrcChannel;
+
 public class ChannelList extends JPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7250637913662497796L;
 	private JButton left, right;
 	private JScrollPane scroll;
 	private JPanel channelPanel;
@@ -96,11 +102,13 @@ public class ChannelList extends JPanel {
 		
 	}
 	
-	public void removeChannel(Channel c) {
-		channelPanel.remove(c);
-		if (channelPanel.getComponents().length > 0)
-			setActive(channelPanel.getComponent(0));
-		
+	public void removeChannel(String c) {
+		Channel chan = getChannel(c);
+		if (chan != null) {
+			channelPanel.remove(chan);
+			if (channelPanel.getComponents().length > 0)
+				setActive(channelPanel.getComponent(0));
+		}
 		channelPanel.revalidate();
 	}
 	
@@ -117,13 +125,16 @@ public class ChannelList extends JPanel {
 	
 	public void appendText(String chan, String text) {
 		Channel channel;
-		if ((channel = getChannel(chan)) != null) {
-			channel.appendText(text);
-			if (!channel.equals(activeChannel))
-				channel.setForeground(Color.RED);
-			else
-				activeChannel.getEditPane().validate();
+		if ((channel = getChannel(chan)) == null) {
+			channel = new Channel(new IrcChannel(chan));
+			addChannel(channel);
 		}
+		channel.appendText(text);
+		if (!channel.equals(activeChannel))
+			channel.setForeground(Color.RED);
+		else
+			activeChannel.getEditPane().validate();
+		 
 	}
 	
 	public Channel getActiveChannel() {

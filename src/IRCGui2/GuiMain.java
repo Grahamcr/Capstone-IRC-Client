@@ -29,6 +29,10 @@ import de.fhh.CapstoneIRC.Video.VideoChatWindow;
 
 public class GuiMain extends JFrame implements IrcGuiInterface {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5722659678363567891L;
 	private IrcServerInterface ircServer;
 	private UserInfoInterface userInfo;
 	private AudioConnection audioConn = new AudioConnection();
@@ -193,7 +197,6 @@ public class GuiMain extends JFrame implements IrcGuiInterface {
 			ircServer.sendText(text.substring(1));
 		} else {
 			this.ircServer.sentTextToChannel(channelList.getActiveChannel().getChannel().getName(),text);
-			writeString(channelList.getActiveChannel().getChannel().getName(), userName, text);
 		}
 		
 		inputField.setText("");
@@ -215,6 +218,9 @@ public class GuiMain extends JFrame implements IrcGuiInterface {
 
 	@Override
 	public void writeString(String channel, String name, String text) {
+		if (channel.equals(userName)) {
+			channel = name;
+		}
 		channelList.appendText(channel, name + ": " + text);
 	}
 
@@ -242,7 +248,7 @@ public class GuiMain extends JFrame implements IrcGuiInterface {
 
 	@Override
 	public void closeChannel(String channel) {
-		channelList.removeChannel(new Channel(channel));
+		channelList.removeChannel(channel);
 	}
 
 	@Override
