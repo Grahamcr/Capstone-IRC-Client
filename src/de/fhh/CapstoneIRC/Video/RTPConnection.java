@@ -139,8 +139,8 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 		}
 		try
 		{
-			m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_localRtpPort);
-			m_remoteReceiverAddress = new SessionAddress(receiver, m_remoteRtpPort);
+			m_localSenderAddress = new SessionAddress(InetAddress.getLocalHost(), m_localRtpPort, 256);
+			m_remoteReceiverAddress = new SessionAddress(receiver, m_remoteRtpPort, 256);
 			m_rtpManager.initialize(new SessionAddress[] { m_localSenderAddress }, sdes, 0.03, 1.0, new EncryptionInfo(EncryptionInfo.NO_ENCRYPTION, new byte[] {}));
 			m_rtpManager.addTarget(m_remoteReceiverAddress);
 		} catch (InvalidSessionAddressException e)
@@ -171,7 +171,7 @@ SessionListener, SendStreamListener, RemoteListener, ReceiveStreamListener
 			{
 				if (!found && (tracks[i].getFormat() instanceof VideoFormat))
 				{
-						if(null == tracks[i].setFormat(new VideoFormat(VideoFormat.JPEG_RTP)))
+						if(null == tracks[i].setFormat(new VideoFormat(VideoFormat.H263_RTP)))
 							System.err.println("Unsupported VideoFormat!");
 						System.out.println("FrameRate: "+((VideoFormat)tracks[i].getFormat()).getFrameRate());
 						found = true;
