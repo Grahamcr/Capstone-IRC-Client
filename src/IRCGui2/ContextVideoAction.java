@@ -30,7 +30,8 @@ class ContextVideoAction extends AbstractAction{
     	
         conn.openVideoConnection(user, port, true);
     } 
- 
+    
+    @Override
     public boolean isEnabled()
     { 
         return comp.isEnabled();

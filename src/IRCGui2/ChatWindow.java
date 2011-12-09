@@ -13,6 +13,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
+import de.fhh.CapstoneIRC.Video.VideoConnection;
+
+import sun.org.mozilla.javascript.internal.ContextAction;
+
 import ServerGuiCommunicationInterface.ChannelUser;
 import ServerGuiCommunicationInterface.ChannelUserList;
 import ServerGuiCommunicationInterface.IrcServerInterface;
@@ -57,8 +61,16 @@ public class ChatWindow extends JSplitPane {
 					
 					
 					final JPopupMenu menu = new JPopupMenu(); 
-					menu.add(new ContextWhoisAction(userList, ircServer)); 
-					menu.add(new ContextVideoAction(userList, ircServer)); 
+					menu.add(new ContextWhoisAction(userList, ircServer));
+					
+					// FIXME: now: just a text "Video Chat Not Available" with no action if video chat is not available
+					if (VideoConnection.isVideoAvailable())
+						menu.add(new ContextVideoAction(userList, ircServer));
+					else {
+						
+						menu.add("Video Chat Not Available");
+					}
+						
 					menu.add(new ContextAudioAction(userList, ircServer));
 					menu.add(new ContextFileAction(userList, ircServer));
 					

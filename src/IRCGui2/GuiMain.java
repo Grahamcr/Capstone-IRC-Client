@@ -155,6 +155,14 @@ public class GuiMain extends JFrame implements IrcGuiInterface {
 			}
 		});
 		
+		exit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
 		
 	}
 	
