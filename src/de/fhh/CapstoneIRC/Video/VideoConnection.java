@@ -3,6 +3,10 @@ package de.fhh.CapstoneIRC.Video;
  * @author Julian Junghans
  * This Class initializes and handles the Webcam and the RTP connection
  */
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import javax.media.CaptureDeviceManager;
 import javax.media.Manager;
 import javax.media.format.VideoFormat;
@@ -101,6 +105,66 @@ public class VideoConnection
 		}
 	}
 	
+	public static boolean tryVideoQuickFix()
+	{	
+		if(System.getProperty("os.name").toLowerCase().contains("win"))
+		{
+			Process p = null;
+			Runtime r = Runtime.getRuntime();
+			try
+			{
+				p = r.exec("cmd /c set");
+				BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				String line;
+				while( (line = br.readLine()) != null )
+				{
+					  int idx = line.indexOf( '=' );
+					  String key = line.substring( 0, idx );
+					  String value = line.substring( idx+1 );
+					  if(key.toUpperCase().contains("CLASSPATH"))
+					  {
+//						  System.out.println( key + " = " + value );
+						  // nichts bis Semikolon, Semikolon bis Semikolon, Semikolon bis nichts
+						  // find jmf.jar
+						  int indexJMF = value.indexOf("jmf.jar");
+						  int from = value.lastIndexOf(';', indexJMF);
+						  if(from <= 0)
+							  from = 0;
+						  else
+							  from+=1;
+						  int to = value.indexOf(';', indexJMF);
+						  if(to < 0)
+							  to = value.length();
+						  String jmfDir = value.substring(from, to);
+//						  System.out.println("JMF DIR: " + jmfDir);
+						  // current dir
+						  String currDir = System.getProperty("user.dir");
+//						  System.out.println("CURRENT DIR: " + currDir);
+						  
+						  // strip "replace .jar with .properties
+						  jmfDir = jmfDir.replace(".jar", ".properties");
+						  // copy
+						  try
+						  {
+							  FileCopy.copy(jmfDir, currDir);
+						  }
+						  catch (IOException e)
+						  {
+							  System.err.println(e.getMessage());
+						  }
+					  }
+				}
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+			return true;
+		}
+		else
+			return false;
+	}
+	
 	public static boolean isVideoAvailable()
 	{
 		if(System.getProperty("os.name").toLowerCase().contains("win"))
@@ -111,10 +175,15 @@ public class VideoConnection
 				java.util.Vector deviceListVector = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 				if (deviceListVector == null || deviceListVector.size() == 0)
 				{
+					if(tryVideoQuickFix())
+					{
+						deviceListVector = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
+						if (deviceListVector != null && deviceListVector.size() > 0)
+							return true;
+					}
 					return false;
 				}
-				else
-					return true;
+				return true;
 			}
 			catch(Exception e)
 			{
