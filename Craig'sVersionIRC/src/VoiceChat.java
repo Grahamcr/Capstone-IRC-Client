@@ -28,6 +28,8 @@ public class VoiceChat extends JFrame {
     SourceDataLine sourceDataLine;
 
     String address;
+    
+    InetAddress sendTo;
 
     int port;
 
@@ -48,6 +50,11 @@ public class VoiceChat extends JFrame {
         captureBtn.setBackground(Color.GREEN);
         captureBtn.setForeground(Color.BLUE);
         address = pIP.trim();
+        try {
+            sendTo = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         port = pPort;
         this.setBackground(Color.BLACK);
         setLayout(new GridLayout(1, 2));
@@ -157,7 +164,7 @@ public class VoiceChat extends JFrame {
     private AudioFormat getAudioFormat(){
 
         //How many snapshots of sound pressure are taken per second (8000,11025,16000,22050,44100)
-        float sampleRate = 8000.0F;
+        float sampleRate = 11025.0F;
 
         //Number of bits used to store each snapshot (8 or 16)
         int sampleSizeInBits = 16;
@@ -169,7 +176,7 @@ public class VoiceChat extends JFrame {
         boolean signed = true;
 
         //true,false
-        boolean bigEndian = false;
+        boolean bigEndian = true;
 
         return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
     }
@@ -192,7 +199,8 @@ public class VoiceChat extends JFrame {
 
                     //Name or explicit IP Address - right now just send it back to me for testing purposes
                     InetAddress ipAddress = InetAddress.getByName(address);
-
+                    String tmp = ipAddress.getHostAddress();
+                    //InetAddress ipAddress = sendTo;
                     if(cnt > 0){
 
                         //If have data - send it !
@@ -243,6 +251,8 @@ public class VoiceChat extends JFrame {
 
                     //Get the data byte array from the packet
                     byte[] data = receivePacket.getData();
+                    
+                    sendTo = receivePacket.getAddress();
 
                     //Add the most recently received data to that which we are already holding
                     int i = 0;

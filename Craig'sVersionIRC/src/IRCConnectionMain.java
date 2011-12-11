@@ -3,13 +3,16 @@
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-
+import java.awt.Toolkit;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Date;
 
 
 
 /**
  * 
- * @author Holger Rocks
+ * @author Holger Rocks 
  *
  *  This class is the main IRC-receiver.
  *  It opens a TCP-Connection to any given IRC-Server and
@@ -29,10 +32,11 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     private HashMap<String, Boolean> videoRequstMap = new HashMap<String, Boolean>();
     private HashMap<String, AudioConnection> audioConnMap = new HashMap<String, AudioConnection>();
     private HashMap<String, FileConnection> fileConnMap = new HashMap<String, FileConnection>();
-    
+    String thisUser;
     
     @Override
     public void run() {
+        
         
         while(true)
         {
@@ -259,6 +263,18 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
         String message = "USER CapIRC "+ tcp.getHostname() + " " + ip + " " + realName;
         tcp.sendMessage(message);
         tcp.sendMessage("NICK " + nickname);
+        
+        int delay = 5000;   // delay for 5 sec.
+        int period = 15000;  // repeat every 15 sec.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+        public void run() {
+            System.out.println("Updating User List");
+            guiConnection.updateChannel();
+            tcp.sendMessage("NAMES #test");
+            //sendCommandMessage(thisUser, "TIME ");            
+        }
+    }, delay, period);
     }
 
     @Override
@@ -282,6 +298,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     
     public void userJoinsChannel(String user, StringTokenizer st)
     {
+        thisUser = user;
          if(user != this.getCurrentUser().getName())
        {
            String channel = st.nextToken().substring(1);
@@ -325,7 +342,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
            chan.addUser(globalUserList.addUser(new UserInfo(name)), name);
        }
        
-       guiConnection.openChannel(chan, false);
+       guiConnection.openChannel(chan, false);                
+         
     }
     
     public void openNewChannelReady(StringTokenizer st)
@@ -335,6 +353,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
        String channel = st.nextToken();
        IrcChannel chan = chanList.getIrcChannel(channel);
        guiConnection.openChannel(chan, false);
+       
     }
 
     @Override
@@ -383,8 +402,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     @Override
     public void openFileConnection(final String username, final int port) {
         // TODO Auto-generated method stub
-        String ip = GetClientIP.getAdress();
-        String message = "FILE" + GetClientIP.getAdresAsInt() + " " + port;
+        final String ip = GetClientIP.getAdress();
+        String message = "FILE " + GetClientIP.getAdresAsInt() + " " + port;
         
         if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
         {
@@ -397,8 +416,9 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
                       FileConnection filec = new FileConnection();
                       filec.waitForAudioConnection(port);
                       filec.setConnectionOpened(true);
-                      filec.startFileConnection(username, port);
                       fileConnMap.put(username, filec);
+                      //filec.startFileConnection(ip, port, username);
+                      
                   };
                 } ).start();    
         }

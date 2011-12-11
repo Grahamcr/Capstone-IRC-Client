@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.net.*;
 import javax.swing.border.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class IRCGuiMain extends JFrame implements IrcGuiInterface {
 
@@ -36,11 +38,15 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
         
         JButton     openConnectionButton;
         TextField   chatInputBox;
-        JTextArea   chatMessageBox;
+        //JTextArea   chatMessageBox;
+        JEditorPane chatMessageBox;
         JButton     submit;
         JList   userList;
         JFrame  frame;
-
+        String messageText;
+        ArrayList<String> usernameList;
+        String[] colors = {"669900", "000099", "00CCFF", "FF6600", "CC66FF", "00FFFF", "FFFF00",
+        "990033", "FFCCCC", "333399", "336600"};
         //JLabel ipLabel;
         //JLabel portLabel;
             //JLabel chanLabel;
@@ -57,6 +63,12 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             Container content = this.getContentPane();
             content.setBackground(Color.black);
             content.setLayout(new BorderLayout());
+            usernameList = new ArrayList<String>();
+
+            //set up file transfer server
+            Thread serverThread = new ServerThread();
+            serverThread.start();
+            
             this.initWindow();
             this.addWindowListener(new WindowListener() {
 
@@ -92,9 +104,12 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             chatInputBox = new TextField();
-            chatMessageBox = new JTextArea();
+            chatMessageBox = new JEditorPane();
+            chatMessageBox.setContentType("text/html");
+            //chatMessageBox = new JTextArea();
             openConnectionButton = new JButton();
             userList = new JList(listModel);
+            messageText = "<html>\n";
             
 
             submit = new JButton("Send!");
@@ -227,6 +242,7 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             
             Border chatMessageBoxBorder = BorderFactory.createLineBorder(new Color(0, 53, 90), 3);
             chatMessageBox.setBorder(chatMessageBoxBorder);
+            //chatMessageBox.setLineWrap(true);
             
             //Bottom Panel for the input box and submit buttons
             JPanel bottomPanel = new JPanel();
@@ -240,8 +256,8 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             JPanel topPanel = new JPanel();
             topPanel.setLayout(new BorderLayout());
             topPanel.add(BorderLayout.WEST, openConnectionButton);
-            
-            ImageIcon gvIcon = new ImageIcon("GV_Logo.jpg");
+            ClassLoader cl = this.getClass().getClassLoader();
+            ImageIcon gvIcon = new ImageIcon(cl.getResource("GV_Logo.jpg"));
             JButton gvLogo = new JButton();
             gvLogo.setPreferredSize(new Dimension(100, 40));
             gvLogo.setBorder(chatMessageBoxBorder);
@@ -257,11 +273,8 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             
             // Add Componets To JFrame
             this.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
-            //this.getContentPane().add(chatInputBox);
             this.getContentPane().add(chatMessageBox, BorderLayout.CENTER);
-            //this.getContentPane().add(submit);
             this.getContentPane().add(userList, BorderLayout.EAST);
-            //this.getContentPane().add(openConnectionButton, BorderLayout.NORTH);
             this.getContentPane().add(topPanel, BorderLayout.NORTH);
             this.pack();
         
@@ -302,8 +315,21 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
         public void writeString(String name, String text) {
             // TODO Auto-generated method stub
             System.out.println(name + ": " + text);
-            
-            chatMessageBox.append(name + ": " + text + "\n");
+            if(!usernameList.contains(name)) {
+                usernameList.add(name);
+            }
+            int index = usernameList.indexOf(name);
+            String colorCode = "";
+            if(index < colors.length) {
+                colorCode = colors[index];
+            }
+            else{
+                Random randomGenerator = new Random();
+                index = randomGenerator.nextInt(colors.length);
+                colorCode = colors[index];
+            }
+            messageText+=("<font color="+colorCode+">" + name + ": " + "</font>" + text + "\n<br>");
+            chatMessageBox.setText(messageText);
         }
 
         @Override
@@ -433,5 +459,11 @@ public class IRCGuiMain extends JFrame implements IrcGuiInterface {
             } ).start();    
             
         }
+        class ServerThread extends Thread{
+        
+        public void run(){
+            DCCServer d = new DCCServer("123.232.232.232", 7000);
+        }
+    }
         
     }

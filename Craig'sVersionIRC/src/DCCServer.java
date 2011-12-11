@@ -64,11 +64,10 @@ public class DCCServer
         try {
 
             listenSocket = new ServerSocket(port);            
-            System.out.println("Attempting to bind to port 80");
+            System.out.println("File Server attempting to bind to port 7000");
             while(listenSocket == null) {
-                //create a Socket to listen to port 80 - common port for internet browsers
                 //if(listenSocket != null) {
-                listenSocket = new ServerSocket(6789);
+                listenSocket = new ServerSocket(port);
                 //}
             }
         } catch (IOException io) {
@@ -79,7 +78,6 @@ public class DCCServer
         while(true) {
             System.out.println("Ready and waiting!...");
             connectionSocket = null;
-            //accept connection request on port 80
             try {
                 if(listenSocket != null) {
                     //Setup the ability to talk back and forth with the client
@@ -280,9 +278,11 @@ public class DCCServer
             }
             FileOutputStream out = new FileOutputStream(new File(fileToSave));
             out.write(tmp, 0, fileLength);
+            out.close();
         }catch(IOException e) {
             System.out.println("Error writting file to filesytem " + e);
         }
+        
     }
 
     /**********************************************************
