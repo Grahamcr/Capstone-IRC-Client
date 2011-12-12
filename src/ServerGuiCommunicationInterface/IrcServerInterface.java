@@ -8,7 +8,7 @@ public interface IrcServerInterface extends Runnable{
 	public void setTextStyle(TextStyle style);
 	public void setTextReceiver(IrcGuiInterface connection);
 	public void openConnection(String ip, int port, String nickname, String realname );
-	public void openVideoConnection(String username, int port, Boolean firstRequest);
+	public void openVideoConnection(String username, int port, int portAudio, Boolean firstRequest);
 	public void openAudioConnection(String username, int port);
 	public String getServerName();
 	public void openFileConnection(String username, int port);

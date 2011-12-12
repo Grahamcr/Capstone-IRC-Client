@@ -86,12 +86,16 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			    		   String action = tok.nextToken();
 			    		   int ip = Integer.parseInt(tok.nextToken());
 		    			   int port = Integer.parseInt(tok.nextToken());
+		    			   int audioPort = Integer.parseInt(tok.nextToken());
 		    			   System.out.println(ip + " " + port);
 			    		   
 			    		   if(action.equals("REQ"))
 			    		   {
 			    			   videoRequstMap.put(user, true);
 			    			   guiConnection.openVideoConnection(user, GetClientIP.intToIpAdress(ip), port, false);
+
+		    				   guiConnection.openAudioConnection(user,GetClientIP.intToIpAdress(ip), audioPort);
+			    			   
 			    		   }
 			    		   else
 			    		   {
@@ -99,6 +103,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			    			   {
 			    				   videoRequstMap.remove(user); // prevent that user opens again without request.
 			    				   guiConnection.openVideoConnection(user, GetClientIP.intToIpAdress(ip), port, true);
+			    				
+			    				   guiConnection.openAudioConnection(user,GetClientIP.intToIpAdress(ip), audioPort);
 			    			   }
 			    			   
 			    		   }
@@ -345,7 +351,7 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 	}
 
 	@Override
-	public void openVideoConnection(String username, int port, Boolean firstRequest) {
+	public void openVideoConnection(String username, int port, int portAudio, Boolean firstRequest) {
 		// TODO Auto-generated method stub
 //		String ip = GetClientIP.getAdress();
 		String req = "REQ";
@@ -355,18 +361,28 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 			req = "RET";
 		}
 		
-    	String message = "DVC " + req + " " + GetClientIP.getAdresAsInt() + " " + port;
+    	String message = "DVC " + req + " " + GetClientIP.getAdresAsInt() + " " + port + " " + portAudio;
+    
     	videoRequstMap.put(username, true);
+    	
     	
     	this.sendCommandMessage(username, message);
 	}
 
+	public void openAudioConnection(final String username, final int port, boolean video)
+	{
+		openAudioConnectionInternal(username, port, video);
+	}
 	
-	@Override
-	public void openAudioConnection(final String username, final int port) {
-		// TODO Auto-generated method stub
-//		String ip = GetClientIP.getAdress();
+	
+	public void openAudioConnectionInternal(final String username, final int port, boolean video)
+	{
     	String message = "DAC " + GetClientIP.getAdresAsInt() + " " + port;
+    	
+    	if( video == true)
+    	{
+    		message = message + " 6668";
+    	}
     	
     	if(audioConnMap.containsKey(username) && audioConnMap.get(username).getConnectionOpened() == true)
     	{
@@ -385,6 +401,14 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
     	}
     	
     	this.sendCommandMessage(username, message);
+	}
+	
+	@Override
+	public void openAudioConnection(final String username, final int port) {
+		// TODO Auto-generated method stub
+//		String ip = GetClientIP.getAdress();
+		openAudioConnection(username, port, false);
+
     	
 	}
 	
