@@ -32,8 +32,14 @@ public class VideoTestPlayerGUI extends JFrame implements ActionListener
 
 	public static void main(String[] args)
 	{
-		@SuppressWarnings("unused")
-		VideoTestPlayerGUI gui = new VideoTestPlayerGUI();
+		boolean fVideoAvailable = VideoConnection.isVideoAvailable();
+		System.out.println("Check if Video is available on this System: " + fVideoAvailable);
+		if(fVideoAvailable)
+			@SuppressWarnings("unused")
+			VideoTestPlayerGUI gui = new VideoTestPlayerGUI();
+		else
+			JOptionPane.showMessageDialog(null, "The JMF Video Framework is not available on this system,\nor no webcam was found!", "Error", JOptionPane.OK_OPTION);
+
 	}
 	
 	public VideoTestPlayerGUI()
