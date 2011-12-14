@@ -160,13 +160,20 @@ public class DCCServer
 
         //User Accepts
         if(result == 0) {
-            String input = null;
-            while(input == null || input.equals("")) {
-                input = JOptionPane.showInputDialog(null, "Please, Enter Path with File Name" + "\n" +
-                    " Where You Like This File To Be Saved");
-                fileToSave = input.trim();
-            }
-
+//             String input = null;
+//             while(input == null || input.equals("")) {
+//                 input = JOptionPane.showInputDialog(null, "Please, Enter Path with File Name" + "\n" +
+//                     " Where You Like This File To Be Saved");
+//                 fileToSave = input.trim();
+//             }
+//             // Show save dialog; this method does not return until the dialog is closed
+            String filename = File.separator+"tmp";
+            JFileChooser fc = new JFileChooser(new File(filename));
+            File selFile = fc.getSelectedFile();
+            fc.showSaveDialog(null);
+            selFile = fc.getSelectedFile();
+            fileToSave = selFile.getAbsolutePath();
+            
             System.out.println("You accepted the file transfer, request sent to client");
             toReturn = true;
         }

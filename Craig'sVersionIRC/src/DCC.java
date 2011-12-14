@@ -64,27 +64,14 @@ public class DCC
     public void start() {
 
         try{
-            
-//             
-//             String input = null;
-//             while(input == null || input.equals("")) {
-//                 input = JOptionPane.showInputDialog(null, "Please, Enter the IP Address");
-//             }
-//             address = input.trim();
-            /**
-            String input2 = null;
-            while(input2 == null || input2.equals("")) {
-                input2 = JOptionPane.showInputDialog(null, "Please, Enter the port");
-            }
-            port = Integer.parseInt(input2.trim());
-            **/
-            
-            String input3 = null;
-            while(input3 == null || input3.equals("")) {
-                input3 = JOptionPane.showInputDialog(null, "Please, Enter the filename");
-            }
-            fileName = input3.trim();
+            String filename = File.separator+"tmp";
+            JFileChooser fc = new JFileChooser(new File(filename));
 
+            // Show open dialog; this method does not return until the dialog is closed
+            fc.showOpenDialog(null);
+            File selFile = fc.getSelectedFile();
+            fileName = selFile.getAbsolutePath();
+            
             System.out.println("Trying to set up socket");
 
             try{
