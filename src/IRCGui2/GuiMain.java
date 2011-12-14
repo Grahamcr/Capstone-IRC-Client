@@ -273,7 +273,7 @@ public class GuiMain extends JFrame implements IrcGuiInterface {
 				        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				    if (response == JOptionPane.YES_OPTION) 
 				    {
-				        ircServer.openVideoConnection(username, port, false);
+				        ircServer.openVideoConnection(username, port, port + 1, false);
 				    }
 				    else
 				    {
