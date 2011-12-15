@@ -77,7 +77,8 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    	   text = text.substring(text.indexOf(':') + 1);		    	   
 		    	 
 		    	   StringTokenizer tok = new StringTokenizer(text, " ");
-	    		   String actionTok = tok.nextToken();
+	    		   String actionTok = tok.nextToken().trim();
+	    		   System.out.println(actionTok);
 		    	   
 		    	   if(actionTok.equals("DVC") ) // it is a video connection, if the next parameters are ok!
 		    	   {
@@ -131,6 +132,26 @@ public class IRCConnectionMain implements IrcServerInterface, UserInfoInterface 
 		    			   
 		    		   }
 		    		   
+		    	   } else if (actionTok.equalsIgnoreCase("dcc")) {
+		    		   try {
+		    			   String next = tok.nextToken();
+		    			   if (next.equals("SEND")) {
+		    				   String fileName = tok.nextToken();
+		    				   fileName = fileName.substring(1, fileName.length()-1);
+		    				   long ip = Long.parseLong(tok.nextToken());
+			    			   int port = Integer.parseInt(tok.nextToken());
+			    			   int size = Integer.parseInt(tok.nextToken().trim());
+		    				   
+			    			   System.out.println("eingehender DCC: \nDatei: " + fileName 
+			    					   + "\nip: " + GetClientIP.longToIpAdress(ip)
+			    					   + "\nport: " + port
+			    					   + "\nsize: " + size);
+		    				   
+		    			   }
+		    			   
+		    		   } catch (Exception e) {
+		    			   e.printStackTrace();
+		    		   }
 		    	   }
 		    	   
 		    	   guiConnection.writeString(chan, user, text);

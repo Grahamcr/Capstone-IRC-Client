@@ -29,6 +29,21 @@ public static String getAdress() {
 
 	    		return conv[0] + "." +conv[1] + "." +conv[2] + "." + conv[3];
 	    	}
+	
+	public static final String longToIpAdress(long input) {
+        
+		long[] conv = new long[4];
+		conv[3] = conv[3] | (input & 0xff);
+		input >>= 8;
+		conv[2] = conv[2] | (input & 0xff);
+		input >>= 8;
+		conv[1] = conv[1] | (input & 0xff);
+		input >>= 8;
+		conv[0] = conv[0] | (input & 0xff);
+
+		return conv[0] + "." +conv[1] + "." +conv[2] + "." + conv[3];
+	}
+	
 	public static final int byteArrToInt(byte[] b) 
 	{
 	    int l = 0;
