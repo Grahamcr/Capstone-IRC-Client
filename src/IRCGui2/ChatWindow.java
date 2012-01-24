@@ -64,12 +64,17 @@ public class ChatWindow extends JSplitPane {
 					menu.add(new ContextWhoisAction(userList, ircServer));
 					
 					// FIXME: now: just a text "Video Chat Not Available" with no action if video chat is not available
-					if (VideoConnection.isVideoAvailable())
-						menu.add(new ContextVideoAction(userList, ircServer));
-					else {
-						
+					try {
+						if (VideoConnection.isVideoAvailable())
+							menu.add(new ContextVideoAction(userList, ircServer));
+						else {
+							
+							menu.add("Video Chat Not Available");
+						}
+					} catch (Throwable ex) {
 						menu.add("Video Chat Not Available");
 					}
+					
 						
 					menu.add(new ContextAudioAction(userList, ircServer));
 					menu.add(new ContextFileAction(userList, ircServer));

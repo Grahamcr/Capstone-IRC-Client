@@ -77,7 +77,7 @@ public class TCPConnection implements Runnable {
 			{
 				if(bufferedReader == null)
 				{
-					bufferedReader = new BufferedReader( new InputStreamReader(socket.getInputStream()));
+					bufferedReader = new BufferedReader( new InputStreamReader(socket.getInputStream(),"UTF8"));
 				}
 		      
 		       line = bufferedReader.readLine();	       
